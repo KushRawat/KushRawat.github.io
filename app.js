@@ -1,25 +1,60 @@
-const form = document.querySelector('#searchForm')
-form.addEventListener('submit', async (e) => {
-    e.preventDefault()
-    // console.dir(form)
-    const searchTerm = form.elements.query.value
-    const config = { params: { q: searchTerm} }
-    // const config = {params: {q: searchTerm, wow:'really'}}
-    const res = await axios.get(`http://api.tvmaze.com/search/shows`, config)
-    // const res = await axios.get(`http://api.tvmaze.com/search/shows?q=${searchTerm}`)
-    // console.log(res.data[0].show.image.medium)
-    // makeImages(res.data)
-    // console.log(res.data)
-    makeImages(res.data)
-    form.elements.query.value = ''
+const p1Button = document.querySelector('#p1Button')
+const p2Button = document.querySelector('#p2Button')
+const resetButton = document.querySelector('#reset')
+const p1Display = document.querySelector('#p1Display')
+const p2Display = document.querySelector('#p2Display')
+const winningScoreSelect = document.querySelector('#plays')
+
+let p1Score = 0
+let p2Score = 0
+let winningScore = 3
+let isGameOver = false
+
+p1Button.addEventListener('click', function (e) {
+    if (!isGameOver) {
+        p1Score++
+        if (p1Score === winningScore) {
+            isGameOver = true
+            p1Display.classList.add('has-text-success')
+            p2Display.classList.add('has-text-danger')
+            p1Button.disabled = true
+            p2Button.disabled = true
+        }
+        p1Display.textContent = p1Score
+    }
 })
 
-const makeImages = (shows) => {
-    for (let result of shows) {
-        if (result.show.image) {
-            const img = document.createElement('IMG')
-            img.src = result.show.image.medium
-            document.body.append(img)
+
+p2Button.addEventListener('click', function (e) {
+    if (!isGameOver) {
+        p2Score++
+        if (p2Score === winningScore) {
+            isGameOver = true
+            p1Display.classList.add('has-text-success')
+            p2Display.classList.add('has-text-danger')
+            p1Button.disabled = true
+            p2Button.disabled = true
         }
+        p2Display.textContent = p2Score
     }
+})
+
+function reset() {
+    isGameOver = false
+    p1Score = 0
+    p2Score = 0
+    p1Display.textContent = 0
+    p2Display.textContent = 0
+    p1Display.classList.remove('has-text-success', 'has-text-danger')
+    p2Display.classList.remove('has-text-success', 'has-text-danger')
+    p1Button.disabled = false
+    p2Button.disabled = false
 }
+
+resetButton.addEventListener('click', reset)
+
+
+winningScoreSelect.addEventListener('change', function (e) {
+    winningScore = parseInt(this.value)
+    reset()
+})
