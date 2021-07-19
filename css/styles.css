@@ -1,5 +1,15 @@
 @charset "UTF-8";
-
+/*!
+* Start Bootstrap - Resume v7.0.2 (https://startbootstrap.com/theme/resume)
+* Copyright 2013-2021 Start Bootstrap
+* Licensed under MIT (https://github.com/StartBootstrap/startbootstrap-resume/blob/master/LICENSE)
+*/
+/*!
+ * Bootstrap v5.0.2 (https://getbootstrap.com/)
+ * Copyright 2011-2021 The Bootstrap Authors
+ * Copyright 2011-2021 Twitter, Inc.
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
+ */
  /* HIGHER SPECIFICITY */
 /* DECLARING GLOBAL CSS VARIABLES */
 :root {
@@ -48,10 +58,12 @@ body {
   font-weight: 400;
   line-height: 1.5;
   color: #212529;
-  background-color: #fff;
+  background-color: #151418;
   -webkit-text-size-adjust: 100%;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
+
+
 
 hr {
   margin: 1rem 0;
@@ -71,7 +83,8 @@ h6, .h6, h5, .h5, h4, .h4, h3, .h3, h2, .h2, h1, .h1 {
   font-family: "Saira Extra Condensed", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   font-weight: 700;
   line-height: 1.2;
-  color: #343a40;
+  /* color: #343a40; */
+  color: #e5e5e5;
 }
 
 h1, .h1 {
@@ -121,6 +134,10 @@ h6, .h6 {
 p {
   margin-top: 0;
   margin-bottom: 1rem;
+}
+
+.lead {
+  color: #e5e5e5;
 }
 
 abbr[title],
@@ -201,11 +218,11 @@ sup {
 }
 
 a {
-  color: #bd5d38;
+  color: #e5e5e5;
   text-decoration: underline;
 }
 a:hover {
-  color: #974a2d;
+  color: #8739fa;
 }
 
 a:not([href]):not([class]), a:not([href]):not([class]):hover {
@@ -6114,6 +6131,7 @@ textarea.form-control-lg {
 
 .link-primary {
   color: #bd5d38;
+  /* color: #bd5d38; */
 }
 .link-primary:hover, .link-primary:focus {
   color: #ca7d60;
@@ -7345,7 +7363,7 @@ textarea.form-control-lg {
 
 /* rtl:end:remove */
 .text-primary {
-  color: #bd5d38 !important;
+  color: #8739fa !important;
 }
 
 .text-secondary {
@@ -7401,7 +7419,7 @@ textarea.form-control-lg {
 }
 
 .bg-primary {
-  background-color: #bd5d38 !important;
+  background-color: #242329 !important;
 }
 
 .bg-secondary {
@@ -10867,11 +10885,18 @@ h5,
 .h5,
 h6,
 .h6 {
-  text-transform: uppercase;
+  /* text-transform: uppercase; */
+  text-transform: none;
+  /* letter-spacing: 0rem; */
 }
 
 h1, .h1 {
-  line-height: 1;
+  line-height: 1.5;
+  font-weight: 400;
+  font-size:4rem;
+  /* letter-spacing: .01rem; */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  /* font-stretch:normal; */
 }
 
 p.lead {
@@ -10881,9 +10906,11 @@ p.lead {
 
 .subheading {
   font-family: "Saira Extra Condensed", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  text-transform: uppercase;
+  text-transform: none;
   font-weight: 500;
-  font-size: 1.5rem;
+  font-size: 1.8rem;
+  color: #666669;
+  letter-spacing: .07rem;
 }
 
 #sideNav {
@@ -10920,7 +10947,8 @@ p.lead {
   #sideNav .navbar-brand .img-profile {
     max-width: 10rem;
     max-height: 10rem;
-    border: 0.5rem solid rgba(255, 255, 255, 0.2);
+    /* border: 0.5rem solid rgba(255, 255, 255, 0.2); */
+    border: 0.5rem solid #8739fa;
   }
   #sideNav .navbar-collapse {
     display: flex;
@@ -10946,8 +10974,10 @@ p.lead {
   justify-content: center;
   height: 3.5rem;
   width: 3.5rem;
-  background-color: #495057;
-  color: #fff;
+  /* background-color: #495057; */
+  background-color: #151418;
+  /* color: #fff; */
+  color: #666669;
   border-radius: 100%;
   font-size: 1.5rem;
   margin-right: 1.5rem;
@@ -10956,7 +10986,8 @@ p.lead {
   margin-right: 0;
 }
 .social-icons .social-icon:hover {
-  background-color: #bd5d38;
+  /* background-color: #bd5d38; */
+  background-color: #8739fa;
 }
 
 .dev-icons {
