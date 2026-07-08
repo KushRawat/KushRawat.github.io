@@ -202,6 +202,25 @@ body.is-leaving .rleave { opacity: 1; }
 
 @media (max-width: 640px) {
   .rhint { font-size: 0.5625rem; bottom: 4rem; }
-  .rpanel { padding-top: 4rem; }
+  .rgame { top: 7.6rem; } /* clear the "back to room" button */
   .rgame__stats { gap: 0.8rem; font-size: 0.6875rem; }
+
+  /* info panel becomes a bottom sheet — the tapped object stays visible above */
+  .rpanel {
+    top: auto; left: 0; right: 0; bottom: 0;
+    width: 100%; max-height: 66vh;
+    border-left: 0; border-top: 1px solid var(--line);
+    border-radius: 20px 20px 0 0;
+    padding: 1.6rem 1.4rem calc(1.6rem + env(safe-area-inset-bottom, 0px));
+    box-shadow: 0 -20px 60px rgba(0, 0, 0, 0.55);
+    animation: sheet-in 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  /* grabber handle */
+  .rpanel::before {
+    content: ""; position: absolute; top: 0.6rem; left: 50%; transform: translateX(-50%);
+    width: 40px; height: 4px; border-radius: 999px; background: var(--line);
+  }
+  .rpanel__close { top: 1.4rem; right: 1.2rem; }
+  .rpanel h2 { font-size: 1.4rem; }
 }
+@keyframes sheet-in { from { transform: translateY(100%); } }

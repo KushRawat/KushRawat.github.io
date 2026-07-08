@@ -187,6 +187,7 @@ function pivotWrap(obj) {
 /* ============ hotspot registry ============ */
 const hotspots = {};      // id -> { group, view, label }
 const pulses = [];        // clickable-marker sprites
+const markerProxies = []; // invisible hit-spheres for reliable tapping
 
 function makePulseSprite(pos) {
   const cv = document.createElement('canvas');
@@ -221,6 +222,16 @@ function registerHotspot(id, group, view, label, markerPos) {
   });
   const marker = makePulseSprite(markerPos);
   marker.userData.hotspot = id; // the floating pulse is tappable too (esp. on touch)
+  // invisible hit-sphere at the marker — a generous, occlusion-proof tap target
+  // so small/edge objects (phone, trashcan) are reliably reachable, esp. on touch
+  const proxy = new THREE.Mesh(
+    new THREE.SphereGeometry(TOUCH ? 0.32 : 0.2, 8, 8),
+    new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false })
+  );
+  proxy.position.set(...markerPos);
+  proxy.userData.hotspot = id;
+  scene.add(proxy);
+  markerProxies.push(proxy);
   hotspots[id] = { group, view, label, marker, glow };
 }
 
@@ -758,10 +769,29 @@ Promise.all(MODELS.map(loadModel)).then(() => {
   const aimGeo = new THREE.BufferGeometry();
   aimGeo.setAttribute('position', new THREE.BufferAttribute(aimPos, 3));
   const aim = new THREE.Points(aimGeo, new THREE.PointsMaterial({
-    color: 0x22d3ee, size: 0.022, transparent: true, opacity: 0.8, depthWrite: false,
+    color: 0x22d3ee, size: TOUCH ? 0.03 : 0.022, transparent: true, opacity: 0.9, depthWrite: false,
   }));
   aim.visible = false;
   scene.add(aim);
+
+  // target ring on the bin rim — shows the goal (esp. on touch, no cursor)
+  const targetRing = new THREE.Mesh(
+    new THREE.RingGeometry(RIM.r * 0.75, RIM.r * 1.05, 28),
+    new THREE.MeshBasicMaterial({ color: 0x22d3ee, transparent: true, opacity: 0.55, side: THREE.DoubleSide, depthWrite: false })
+  );
+  targetRing.rotation.x = -Math.PI / 2;
+  targetRing.position.set(RIM.x, RIM.y + 0.02, RIM.z);
+  targetRing.visible = false;
+  scene.add(targetRing);
+
+  // landing reticle — the aiming "crosshair": where the ball is predicted to land
+  const reticle = new THREE.Mesh(
+    new THREE.RingGeometry(0.05, 0.075, 22),
+    new THREE.MeshBasicMaterial({ color: 0xf472b6, transparent: true, opacity: 0.95, side: THREE.DoubleSide, depthWrite: false })
+  );
+  reticle.rotation.x = -Math.PI / 2;
+  reticle.visible = false;
+  scene.add(reticle);
 
   const game = {
     score: 0, streak: 0,
@@ -820,6 +850,7 @@ Promise.all(MODELS.map(loadModel)).then(() => {
     canvas.style.cursor = 'crosshair';
     tooltip.classList.remove('is-visible');
     hovered = null;
+    targetRing.visible = true;
     resetBall();
   };
   endGame = () => {
@@ -827,9 +858,29 @@ Promise.all(MODELS.map(loadModel)).then(() => {
     gameActive = false;
     ball.visible = false;
     aim.visible = false;
+    targetRing.visible = false;
+    reticle.visible = false;
     ui.root.hidden = true;
     canvas.style.cursor = 'grab';
   };
+
+  // simulate the throw forward to find where it lands (for the aim reticle)
+  function predictLanding() {
+    const vv = launchVelocity();
+    const p = SPAWN.clone();
+    const step = 0.03;
+    for (let i = 0; i < 240; i++) {
+      vv.y -= GRAV * step;
+      vv.x += game.wind * step;
+      p.addScaledVector(vv, step);
+      if (vv.y < 0 && p.y <= RIM.y) {
+        const d = Math.hypot(p.x - RIM.x, p.z - RIM.z);
+        if (d < RIM.r * 1.25) return { x: p.x, y: RIM.y + 0.02, z: p.z, inBin: true };
+      }
+      if (p.y <= BALL_R) return { x: p.x, y: BALL_R + 0.01, z: p.z, inBin: false };
+    }
+    return null;
+  }
 
   function launchVelocity() {
     const dx = game.drag.x - game.drag.x0;
@@ -853,6 +904,15 @@ Promise.all(MODELS.map(loadModel)).then(() => {
     }
     aimGeo.attributes.position.needsUpdate = true;
     aim.visible = true;
+    // landing reticle — the aiming crosshair (cyan = in the bin, pink = miss)
+    const land = predictLanding();
+    if (land) {
+      reticle.position.set(land.x, land.y, land.z);
+      reticle.material.color.setHex(land.inBin ? 0x22d3ee : 0xf472b6);
+      reticle.visible = true;
+    } else {
+      reticle.visible = false;
+    }
   }
 
   // input (only in game mode)
@@ -871,6 +931,7 @@ Promise.all(MODELS.map(loadModel)).then(() => {
   window.addEventListener('pointerup', () => {
     if (!gameActive || game.state !== 'aiming') return;
     aim.visible = false;
+    reticle.visible = false;
     const up = game.drag.y0 - game.drag.y;
     if (up < 24) { game.state = 'idle'; return; } // too weak — cancel
     game.vel.copy(launchVelocity());
@@ -901,6 +962,12 @@ Promise.all(MODELS.map(loadModel)).then(() => {
   }
 
   animatables.push((t, dt) => {
+    // pulse the bin target ring while the game is live
+    if (targetRing.visible) {
+      const k = 0.9 + Math.sin(t * 3) * 0.12;
+      targetRing.scale.setScalar(k);
+      targetRing.material.opacity = 0.4 + Math.sin(t * 3) * 0.15;
+    }
     // spin idle ball gently so it reads as "ready"
     if (gameActive && game.state === 'idle') ball.rotation.y += dt * 1.5;
     if (game.state !== 'flying') return;
@@ -1265,13 +1332,24 @@ window.addEventListener('pointerup', (e) => {
   }
 });
 
+const PANEL_VIEWS = ['projects', 'tv', 'trivzy', 'resume', 'contact'];
 function goTo(viewName, view) {
   currentView = viewName;
   goalTgt.set(...view.tgt);
   goalPos.set(...view.pos);
   // portrait screens see a narrower slice — pull the camera back
-  const f = camera.aspect < 0.8 ? 1.7 : camera.aspect < 1.1 ? 1.3 : 1;
+  const portrait = camera.aspect < 0.8;
+  const f = portrait ? 1.85 : camera.aspect < 1.1 ? 1.3 : 1;
   goalPos.sub(goalTgt).multiplyScalar(f).add(goalTgt);
+  // on portrait, pan the overview right so the wall poster enters the frame
+  if (portrait && viewName === 'overview') {
+    goalTgt.x += 0.7; goalPos.x += 0.7;
+  }
+  // on portrait, a bottom-sheet panel covers the lower part of the screen —
+  // aim below the object so it rises into the visible top third
+  if (portrait && PANEL_VIEWS.includes(viewName)) {
+    goalTgt.y -= 1.15;
+  }
   peek.tYaw = 0; peek.tPitch = 0;
   if (REDUCED) { curPos.copy(goalPos); curTgt.copy(goalTgt); }
   document.getElementById('rback').hidden = viewName === 'overview';
@@ -1301,8 +1379,13 @@ function pickHotspot(clientX, clientY) {
   pointer.x = (clientX / window.innerWidth) * 2 - 1;
   pointer.y = -(clientY / window.innerHeight) * 2 + 1;
   raycaster.setFromCamera(pointer, camera);
+  // 1) marker hit-spheres first — generous, occlusion-proof targets
+  const mh = raycaster.intersectObjects(markerProxies, false);
+  if (mh.length) return mh[0].object.userData.hotspot;
+  // 2) fall back to the actual object geometry (tapping the object itself)
   const hits = raycaster.intersectObjects(scene.children, true);
   for (const h of hits) {
+    if (markerProxies.includes(h.object)) continue; // invisible, already handled
     let o = h.object;
     while (o && !o.userData.hotspot) o = o.parent;
     if (o && o.userData.hotspot) return o.userData.hotspot;
