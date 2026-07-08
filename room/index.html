@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kush's Playground — 3D Portfolio</title>
+  <meta name="description" content="Kush Rawat's 3D playground — explore the dev room, play paper toss, survive Deploy Rush, and browse real shipped projects." />
+  <link rel="icon" type="image/png" sizes="32x32" href="../assets/img/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="../assets/img/favicon-192.png" />
+  <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="room.css" />
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <div class="rloader" id="rloader">
+    <div class="rloader__title mono">KUSH'S PLAYGROUND</div>
+    <div class="rloader__bar"><span id="rloaderBar"></span></div>
+    <div class="rloader__hint mono" id="rloaderHint">loading furniture…</div>
+  </div>
+
+  <canvas id="room"></canvas>
+  <div class="rleave" aria-hidden="true"></div>
+
+  <header class="rnav">
+    <a class="rnav__logo mono" href="../">KR<span>.</span></a>
+    <a class="rnav__exit mono" href="../">← classic site</a>
+  </header>
+
+  <div class="rvignette" aria-hidden="true"></div>
+
+  <div class="rhint mono" id="rhint">click the glowing objects to explore · drag to peek</div>
+
+  <button class="rsound mono is-on" id="rsound" aria-pressed="true" title="Toggle ambient sound">♪ sound on</button>
+
+  <!-- paper toss game HUD -->
+  <div class="rgame" id="rgame" hidden>
+    <div class="rgame__stats mono">
+      <span>score <b id="gScore">0</b></span>
+      <span>streak <b id="gStreak">×0</b></span>
+      <span>best <b id="gBest">0</b></span>
+      <span class="rgame__wind" id="gWind">wind —</span>
+    </div>
+    <div class="rgame__hint mono" id="gHint">drag & release to toss the rejected resume drafts 🗑</div>
+  </div>
+
+  <div class="rtooltip mono" id="rtooltip"></div>
+
+  <button class="rback mono" id="rback" hidden>← back to room</button>
+
+  <!-- info panels -->
+  <aside class="rpanel" id="rpanel" hidden>
+    <button class="rpanel__close" id="rpanelClose" aria-label="Close">✕</button>
+    <div class="rpanel__content" id="rpanelContent"></div>
+  </aside>
+
+  <script type="module" src="room.js"></script>
+</body>
+</html>
