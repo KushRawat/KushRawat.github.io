@@ -6,14 +6,23 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const TOUCH = window.matchMedia('(hover: none), (pointer: coarse)').matches;
+const SMALL = window.matchMedia('(max-width: 820px)').matches;
+const LOWPWR = TOUCH || SMALL; // phones/tablets: dial back GPU cost
 const canvas = document.getElementById('room');
 
+// touch devices tap, not click
+if (TOUCH) {
+  const hint = document.getElementById('rhint');
+  if (hint) hint.textContent = 'tap the glowing objects to explore · drag to look around';
+}
+
 /* ============ renderer / scene / camera ============ */
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: !LOWPWR });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, LOWPWR ? 2 : 1.5));
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.shadowMap.type = LOWPWR ? THREE.PCFShadowMap : THREE.PCFSoftShadowMap;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.15;
 
@@ -91,7 +100,8 @@ scene.add(new THREE.HemisphereLight(0x334, 0x110f18, 0.5));
 
 const warm = new THREE.PointLight(0xffa550, 9, 9, 2);
 warm.position.set(2.65, 1.55, -0.85); // floor lamp head
-warm.castShadow = true;
+// point-light shadows are the priciest — drop them entirely on phones
+warm.castShadow = !LOWPWR;
 warm.shadow.mapSize.set(1024, 1024);
 warm.shadow.bias = -0.002;
 scene.add(warm);
@@ -107,7 +117,7 @@ scene.add(tvGlow);
 const key = new THREE.DirectionalLight(0xbcc7ff, 0.7);
 key.position.set(4, 6, 3);
 key.castShadow = true;
-key.shadow.mapSize.set(2048, 2048);
+key.shadow.mapSize.set(LOWPWR ? 1024 : 2048, LOWPWR ? 1024 : 2048);
 key.shadow.camera.left = -5; key.shadow.camera.right = 5;
 key.shadow.camera.top = 5; key.shadow.camera.bottom = -5;
 key.shadow.bias = -0.0015;
@@ -209,7 +219,9 @@ function registerHotspot(id, group, view, label, markerPos) {
       glow.push(c);
     }
   });
-  hotspots[id] = { group, view, label, marker: makePulseSprite(markerPos), glow };
+  const marker = makePulseSprite(markerPos);
+  marker.userData.hotspot = id; // the floating pulse is tappable too (esp. on touch)
+  hotspots[id] = { group, view, label, marker, glow };
 }
 
 // registry of per-frame idle animations (steam, flicker, swivel, dust…)
@@ -961,16 +973,76 @@ Promise.all(MODELS.map(loadModel)).then(() => {
   const deploy = {
     running: false, over: false, score: 0, combo: 0,
     best: Number(localStorage.getItem('deployrush-best') || 0),
-    time: 20, target: '', typed: 0, log: [], flash: 0,
+    time: 20, target: '', typed: 0, log: [], flash: 0, options: [],
   };
   window.__deploy = deploy;
+  const dchips = document.getElementById('dchips');
 
   function pickCmd() {
     let next = deploy.target;
     while (next === deploy.target) next = CMDS[(Math.random() * CMDS.length) | 0];
     deploy.target = next;
     deploy.typed = 0;
+    if (TOUCH) renderDeployChips();
   }
+
+  // ---- shared scoring (keyboard on desktop, tap-to-match on touch) ----
+  function deployBegin() {
+    deploy.running = true; deploy.over = false;
+    deploy.score = 0; deploy.combo = 0; deploy.time = 20; deploy.log = [];
+    blip(520, 780);
+    pickCmd();
+  }
+  function deployHit() {
+    deploy.score++; deploy.combo++;
+    deploy.time = Math.min(30, deploy.time + Math.max(1.1, 2.4 - deploy.score * 0.05));
+    deploy.log.push('✓ ' + deploy.target);
+    if (deploy.score > deploy.best) {
+      deploy.best = deploy.score;
+      localStorage.setItem('deployrush-best', String(deploy.best));
+    }
+    blip(660, 880);
+    pickCmd();
+  }
+  function deployMiss() {
+    deploy.combo = 0;
+    deploy.flash = 0.3;
+    deploy.time = Math.max(0.4, deploy.time - 0.75);
+    blip(170, 110);
+  }
+
+  // ---- touch: render the target + 4 decoys as tappable chips ----
+  function renderDeployChips() {
+    const opts = new Set([deploy.target]);
+    while (opts.size < 5) opts.add(CMDS[(Math.random() * CMDS.length) | 0]);
+    const arr = [...opts];
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = (Math.random() * (i + 1)) | 0;
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    deploy.options = arr;
+    dchips.innerHTML = arr.map((c, i) =>
+      `<button data-i="${i}">${c.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;')}</button>`
+    ).join('');
+  }
+  function syncDeployTouchUI() {
+    if (!TOUCH || !deployActive) { dchips.hidden = true; return; }
+    dchips.hidden = false;
+    if (!deploy.running) {
+      const label = deploy.over ? '▶ RETRY' : '▶ START';
+      dchips.innerHTML = `<button class="dchips__go" data-act="start">${label}</button>`;
+    } else {
+      renderDeployChips();
+    }
+  }
+  dchips.addEventListener('click', (e) => {
+    const b = e.target.closest('button');
+    if (!b || !deployActive) return;
+    if (b.dataset.act === 'start') { deployBegin(); syncDeployTouchUI(); return; }
+    if (!deploy.running) return;
+    const cmd = deploy.options[+b.dataset.i];
+    if (cmd === deploy.target) deployHit(); else deployMiss();
+  });
 
   function drawTerm(t) {
     const W = 1024, H = 640;
@@ -990,10 +1062,11 @@ Promise.all(MODELS.map(loadModel)).then(() => {
       term.fillText('DEPLOY RUSH', 60, 140);
       term.fillStyle = '#8b95a8';
       term.font = '30px "JetBrains Mono", monospace';
-      term.fillText('type the commands before prod goes down', 60, 250);
+      term.fillText(TOUCH ? 'tap the matching command before prod dies'
+                          : 'type the commands before prod goes down', 60, 250);
       term.fillText(`best run: ${deploy.best} deploys`, 60, 300);
       term.fillStyle = '#22d3ee';
-      if (Math.sin(t * 4) > -0.2) term.fillText('▸ press ENTER to start', 60, 400);
+      if (Math.sin(t * 4) > -0.2) term.fillText(TOUCH ? '▸ tap START below' : '▸ press ENTER to start', 60, 400);
     } else if (deploy.over) {
       term.fillStyle = '#ef4444';
       term.font = '700 66px "Space Grotesk", monospace';
@@ -1005,7 +1078,31 @@ Promise.all(MODELS.map(loadModel)).then(() => {
       term.font = '28px "JetBrains Mono", monospace';
       term.fillText(`best: ${deploy.best}`, 60, 295);
       term.fillStyle = '#22d3ee';
-      if (Math.sin(t * 4) > -0.2) term.fillText('▸ ENTER to retry · ESC to leave', 60, 400);
+      if (Math.sin(t * 4) > -0.2) term.fillText(TOUCH ? '▸ tap RETRY below' : '▸ ENTER to retry · ESC to leave', 60, 400);
+    } else if (TOUCH) {
+      // touch running: show the target command to find + HUD
+      term.fillStyle = '#4ade80';
+      term.font = '700 30px "JetBrains Mono", monospace';
+      term.fillText('DEPLOY RUSH', 40, 28);
+      term.fillStyle = '#8b95a8';
+      term.font = '26px "JetBrains Mono", monospace';
+      term.textAlign = 'right';
+      term.fillText(`deploys ${deploy.score}   combo ×${deploy.combo}   best ${deploy.best}`, W - 40, 30);
+      term.textAlign = 'left';
+      const frac = Math.max(0, deploy.time / 30);
+      term.fillStyle = 'rgba(255,255,255,0.08)';
+      term.fillRect(40, 80, W - 80, 14);
+      term.fillStyle = deploy.time > 10 ? '#4ade80' : deploy.time > 5 ? '#fbbf24' : '#ef4444';
+      term.fillRect(40, 80, (W - 80) * frac, 14);
+      term.fillStyle = '#8b95a8';
+      term.font = '28px "JetBrains Mono", monospace';
+      term.fillText('deploy this command:', 40, 210);
+      term.fillStyle = '#22d3ee';
+      term.font = '700 52px "JetBrains Mono", monospace';
+      term.fillText(deploy.target, 40, 270);
+      term.fillStyle = '#5a6478';
+      term.font = '26px "JetBrains Mono", monospace';
+      term.fillText('▾ tap the matching chip below', 40, 380);
     } else {
       // HUD row
       term.fillStyle = '#4ade80';
@@ -1066,6 +1163,8 @@ Promise.all(MODELS.map(loadModel)).then(() => {
     monitor2Mat.needsUpdate = true;
     deploy.running = false;
     deploy.over = false;
+    if (TOUCH) document.body.classList.add('deploying');
+    syncDeployTouchUI(); // touch: show START button
   };
   endDeploy = () => {
     if (!deployActive) return;
@@ -1073,6 +1172,8 @@ Promise.all(MODELS.map(loadModel)).then(() => {
     deploy.running = false;
     deploy.over = false;
     canvas.style.cursor = 'grab';
+    dchips.hidden = true;
+    document.body.classList.remove('deploying');
     if (m2Tex) { monitor2Mat.map = m2Tex; monitor2Mat.needsUpdate = true; }
   };
 
@@ -1081,34 +1182,15 @@ Promise.all(MODELS.map(loadModel)).then(() => {
     if (e.key === 'Escape') return; // global handler exits the game
     if (e.key.length === 1 || e.key === 'Enter' || e.key === 'Backspace') e.preventDefault();
     if (e.key === 'Enter') {
-      if (!deploy.running) {
-        deploy.running = true; deploy.over = false;
-        deploy.score = 0; deploy.combo = 0; deploy.time = 20; deploy.log = [];
-        pickCmd();
-        blip(520, 780);
-      }
+      if (!deploy.running) deployBegin();
       return;
     }
     if (!deploy.running || e.key.length !== 1) return;
     if (e.key === deploy.target[deploy.typed]) {
       deploy.typed++;
-      if (deploy.typed >= deploy.target.length) {
-        deploy.score++;
-        deploy.combo++;
-        deploy.time = Math.min(30, deploy.time + Math.max(1.1, 2.4 - deploy.score * 0.05));
-        deploy.log.push('✓ ' + deploy.target);
-        if (deploy.score > deploy.best) {
-          deploy.best = deploy.score;
-          localStorage.setItem('deployrush-best', String(deploy.best));
-        }
-        blip(660, 880);
-        pickCmd();
-      }
+      if (deploy.typed >= deploy.target.length) deployHit();
     } else {
-      deploy.combo = 0;
-      deploy.flash = 0.3;
-      deploy.time = Math.max(0.4, deploy.time - 0.75);
-      blip(170, 110);
+      deployMiss();
     }
   });
 
@@ -1122,6 +1204,7 @@ Promise.all(MODELS.map(loadModel)).then(() => {
         deploy.running = false;
         deploy.over = true;
         blip(300, 150);
+        syncDeployTouchUI(); // touch: swap chips → RETRY button
       }
     }
     drawTerm(t);
@@ -1161,18 +1244,26 @@ let dragMoved = 0;
 let px = 0, py = 0;
 
 canvas.addEventListener('pointerdown', (e) => {
-  if (gameActive) return; // game owns the pointer
+  if (gameActive || deployActive) return; // game owns the pointer
   dragging = true; dragMoved = 0; px = e.clientX; py = e.clientY;
 });
 window.addEventListener('pointermove', (e) => {
-  if (!dragging || gameActive) return;
+  if (!dragging || gameActive || deployActive) return;
   const dx = e.clientX - px, dy = e.clientY - py;
   dragMoved += Math.abs(dx) + Math.abs(dy);
   px = e.clientX; py = e.clientY;
   peek.tYaw = THREE.MathUtils.clamp(peek.tYaw - dx * 0.002, -0.35, 0.35);
   peek.tPitch = THREE.MathUtils.clamp(peek.tPitch + dy * 0.0015, -0.15, 0.2);
 });
-window.addEventListener('pointerup', () => { dragging = false; });
+window.addEventListener('pointerup', (e) => {
+  const wasTap = dragging && dragMoved < 10;
+  dragging = false;
+  // touch has no hover, so a tap raycasts fresh at the release point.
+  // desktop uses the click handler instead (avoids double-activation).
+  if (TOUCH && wasTap && !gameActive && !deployActive && e.target === canvas) {
+    activateHotspot(e.clientX, e.clientY);
+  }
+});
 
 function goTo(viewName, view) {
   currentView = viewName;
@@ -1205,21 +1296,27 @@ let lastEvent = null;
 
 window.addEventListener('pointermove', (e) => { lastEvent = e; pointerDirty = true; }, { passive: true });
 
-function updateHover() {
-  if (gameActive || deployActive) return; // no hotspot hover while playing
-  if (!pointerDirty || !lastEvent) return;
-  pointerDirty = false;
-  pointer.x = (lastEvent.clientX / window.innerWidth) * 2 - 1;
-  pointer.y = -(lastEvent.clientY / window.innerHeight) * 2 + 1;
+// raycast at a screen point → hotspot id (or null). Shared by hover + tap.
+function pickHotspot(clientX, clientY) {
+  pointer.x = (clientX / window.innerWidth) * 2 - 1;
+  pointer.y = -(clientY / window.innerHeight) * 2 + 1;
   raycaster.setFromCamera(pointer, camera);
   const hits = raycaster.intersectObjects(scene.children, true);
-  let id = null;
   for (const h of hits) {
     let o = h.object;
     while (o && !o.userData.hotspot) o = o.parent;
-    if (o && o.userData.hotspot) { id = o.userData.hotspot; break; }
+    if (o && o.userData.hotspot) return o.userData.hotspot;
     if (h.object.isMesh && !h.object.isSprite) break; // solid non-hotspot blocks the ray
   }
+  return null;
+}
+
+// desktop only: cursor + tooltip follow the pointer over hotspots
+function updateHover() {
+  if (TOUCH || gameActive || deployActive) return;
+  if (!pointerDirty || !lastEvent) return;
+  pointerDirty = false;
+  const id = pickHotspot(lastEvent.clientX, lastEvent.clientY);
   if (id !== hovered) {
     hovered = id;
     canvas.style.cursor = id ? 'pointer' : 'grab';
@@ -1236,17 +1333,25 @@ function updateHover() {
   }
 }
 
-canvas.addEventListener('click', () => {
-  if (gameActive || deployActive) return;
-  if (dragMoved > 8) return; // was a drag, not a click
-  if (!hovered) return;
-  const h = hotspots[hovered];
+// activate whatever hotspot is under a click/tap point (works for mouse + touch)
+function activateHotspot(clientX, clientY) {
+  const id = pickHotspot(clientX, clientY);
+  if (!id) return;
+  hovered = id;
+  const h = hotspots[id];
   blip(440, 700);
-  if (hovered === 'toss') { startGame(); return; }
-  if (hovered === 'deploy') { startDeploy(); return; }
-  goTo(hovered, h.view);
-  openPanel(hovered);
-  if (hovered === 'tv' && tvVideo) tvVideo.play().catch(() => {});
+  if (id === 'toss') { startGame(); return; }
+  if (id === 'deploy') { startDeploy(); return; }
+  goTo(id, h.view);
+  openPanel(id);
+  if (id === 'tv' && tvVideo) tvVideo.play().catch(() => {});
+}
+
+// desktop mouse click path (touch goes through pointerup tap detection above)
+canvas.addEventListener('click', (e) => {
+  if (TOUCH || gameActive || deployActive) return;
+  if (dragMoved > 8) return; // was a drag, not a click
+  activateHotspot(e.clientX, e.clientY);
 });
 
 /* ============ info panels ============ */
