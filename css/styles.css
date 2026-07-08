@@ -80,7 +80,6 @@ html.lenis { scroll-behavior: auto; }
 .nav__actions { display: flex; gap: 0.6rem; align-items: center; }
 @media (max-width: 760px) {
   .nav__links { display: none; }
-  .nav__resume { display: none; }
 }
 
 /* ---------- buttons & chips ---------- */

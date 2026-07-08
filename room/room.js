@@ -1,7 +1,7 @@
 // Kush's Room — interactive 3D dev room (layout 2).
 // CC0 furniture models by Kenney (kenney.nl). Everything else hand-placed.
 // Hotspots: monitor → projects, TV → walkthrough videos, shelf → Trivzy,
-// poster → resume, phone → contact.
+// phone → contact.
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
@@ -14,7 +14,7 @@ const canvas = document.getElementById('room');
 // touch devices tap, not click
 if (TOUCH) {
   const hint = document.getElementById('rhint');
-  if (hint) hint.textContent = 'tap the glowing objects to explore · drag to look around';
+  if (hint) hint.textContent = 'tap the glowing objects · drag to look · pinch to zoom';
 }
 
 /* ============ renderer / scene / camera ============ */
@@ -270,9 +270,7 @@ function posterTexture() {
   g.fillText('FULL-STACK ENGINEER', 60, 390);
   g.fillStyle = '#9aa1b5';
   g.font = '24px "JetBrains Mono", monospace';
-  g.fillText('resume.pdf', 60, 560);
-  g.fillStyle = '#22d3ee';
-  g.fillText('→ click to open', 60, 600);
+  g.fillText('co-founder · builder', 60, 560);
   const t = new THREE.CanvasTexture(cv);
   t.colorSpace = THREE.SRGBColorSpace;
   return t;
@@ -501,7 +499,7 @@ Promise.all(MODELS.map(loadModel)).then(() => {
   tvVideo = document.createElement('video');
   tvVideo.muted = true; tvVideo.loop = true; tvVideo.playsInline = true;
   tvVideo.preload = 'auto';
-  tvVideo.src = '../assets/media/caseflow.mp4';
+  tvVideo.src = '../assets/media/lookstyle-1.mp4';
   // show a real frame instead of a blank screen before playback starts
   tvVideo.addEventListener('loadedmetadata', () => { tvVideo.currentTime = 8; }, { once: true });
   const vTex = new THREE.VideoTexture(tvVideo);
@@ -564,16 +562,13 @@ Promise.all(MODELS.map(loadModel)).then(() => {
   shelf.userData.hotspot = 'trivzy';
   shelf.traverse((c) => { c.userData.hotspot = 'trivzy'; });
 
-  /* ---- poster (resume) ---- */
+  /* ---- poster (branded wall decor, non-interactive) ---- */
   const poster = new THREE.Mesh(
     new THREE.PlaneGeometry(0.82, 1.06),
     new THREE.MeshStandardMaterial({ map: posterTexture(), roughness: 0.85 })
   );
   poster.position.set(1.95, 1.8, -2.99);
   scene.add(poster);
-  registerHotspot('resume', poster, {
-    pos: [1.95, 1.75, -1.55], tgt: [1.95, 1.8, -2.99],
-  }, 'Resume — click to view', [1.95, 2.45, -2.95]);
 
   // neon sign above desk
   const neon = new THREE.Mesh(
@@ -1310,31 +1305,70 @@ let dragging = false;
 let dragMoved = 0;
 let px = 0, py = 0;
 
+// camera zoom (wheel on desktop, pinch on touch)
+let zoom = 1, zoomTarget = 1;
+const ZOOM_MIN = 0.55, ZOOM_MAX = 1.6;
+const activePointers = new Map();
+let pinchStartDist = 0, pinchStartZoom = 1, pinching = false;
+const pinchDistance = () => {
+  const p = [...activePointers.values()];
+  return Math.hypot(p[0].x - p[1].x, p[0].y - p[1].y);
+};
+
 canvas.addEventListener('pointerdown', (e) => {
   if (gameActive || deployActive) return; // game owns the pointer
-  dragging = true; dragMoved = 0; px = e.clientX; py = e.clientY;
+  activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  if (activePointers.size === 2) { // second finger → start pinch, cancel drag
+    pinching = true; dragging = false;
+    pinchStartDist = pinchDistance(); pinchStartZoom = zoomTarget;
+  } else {
+    dragging = true; dragMoved = 0; px = e.clientX; py = e.clientY;
+  }
 });
 window.addEventListener('pointermove', (e) => {
-  if (!dragging || gameActive || deployActive) return;
+  if (gameActive || deployActive) return;
+  if (activePointers.has(e.pointerId)) activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  if (pinching && activePointers.size === 2) {
+    const d = pinchDistance();
+    if (pinchStartDist > 0) {
+      zoomTarget = THREE.MathUtils.clamp(pinchStartZoom * (pinchStartDist / d), ZOOM_MIN, ZOOM_MAX);
+    }
+    return;
+  }
+  if (!dragging) return;
   const dx = e.clientX - px, dy = e.clientY - py;
   dragMoved += Math.abs(dx) + Math.abs(dy);
   px = e.clientX; py = e.clientY;
   peek.tYaw = THREE.MathUtils.clamp(peek.tYaw - dx * 0.002, -0.35, 0.35);
   peek.tPitch = THREE.MathUtils.clamp(peek.tPitch + dy * 0.0015, -0.15, 0.2);
 });
+
+// desktop wheel zoom
+canvas.addEventListener('wheel', (e) => {
+  if (gameActive || deployActive) return;
+  e.preventDefault();
+  zoomTarget = THREE.MathUtils.clamp(zoomTarget + e.deltaY * 0.0009, ZOOM_MIN, ZOOM_MAX);
+}, { passive: false });
+function endPointer(e) {
+  activePointers.delete(e.pointerId);
+  if (activePointers.size < 2) pinching = false;
+}
 window.addEventListener('pointerup', (e) => {
-  const wasTap = dragging && dragMoved < 10;
+  const wasTap = dragging && dragMoved < 10 && !pinching;
   dragging = false;
+  endPointer(e);
   // touch has no hover, so a tap raycasts fresh at the release point.
   // desktop uses the click handler instead (avoids double-activation).
   if (TOUCH && wasTap && !gameActive && !deployActive && e.target === canvas) {
     activateHotspot(e.clientX, e.clientY);
   }
 });
+window.addEventListener('pointercancel', endPointer);
 
-const PANEL_VIEWS = ['projects', 'tv', 'trivzy', 'resume', 'contact'];
+const PANEL_VIEWS = ['projects', 'tv', 'trivzy', 'contact'];
 function goTo(viewName, view) {
   currentView = viewName;
+  zoomTarget = 1; // each view starts at its designed framing
   goalTgt.set(...view.tgt);
   goalPos.set(...view.pos);
   // portrait screens see a narrower slice — pull the camera back
@@ -1460,22 +1494,18 @@ const PANELS = {
     <h2>Walkthroughs</h2><span class="sub mono">now playing on the TV</span>
     <p>Real screen recordings of my builds. Pick a channel:</p>
     <div class="vidbtns" id="vidbtns">
-      <button data-src="caseflow" class="is-active">CaseFlow</button>
+      <button data-src="lookstyle-1" class="is-active">Lookstyle</button>
+      <button data-src="caseflow">CaseFlow</button>
       <button data-src="luna">Luna</button>
       <button data-src="tasksphere">TaskSphere</button>
       <button data-src="scrapeandask">Scrape & Ask</button>
-      <button data-src="lookstyle-1">Lookstyle</button>
     </div>
     <p style="margin-top:1rem">Want sound and full screen? <a href="../#projects">Watch them on the classic site →</a></p>`,
   trivzy: `
-    <h2>Trivzy</h2><span class="sub mono">co-founder & head of technology</span>
+    <h2>Trivzy</h2><span class="sub mono">co-founder</span>
     <p>My startup — a hostel concierge & operations platform. Guests get an AI chatbot, self check-in with document + signature upload, food ordering and vehicle rentals; operators get full admin dashboards.</p>
     <p>Live in production: first hostel onboarded, <strong style="color:#e8eaf2">300+ guest check-ins</strong>. iOS & Android apps in development. I own every line of the tech.</p>
     <a class="cta" href="https://trivzy.in" target="_blank" rel="noopener">visit trivzy.in ↗</a>`,
-  resume: `
-    <h2>Resume</h2><span class="sub mono">the poster on the wall</span>
-    <p>Full-stack engineer · 4+ years · fintech → founder. Payments, KYC, reconciliation at Frenzopay; 10+ products shipped since going independent; co-founder at Trivzy.</p>
-    <a class="cta" href="../assets/KushRawatResume.pdf" target="_blank" rel="noopener">open resume PDF ↗</a>`,
   contact: `
     <h2>Contact</h2><span class="sub mono">the phone is always on</span>
     <p>Building something? I ship fast and own the whole stack.</p>
@@ -1604,7 +1634,7 @@ setInterval(() => {
   shotIdx = (shotIdx + 1) % monitorTextures.length;
   monitorMat.map = monitorTextures[shotIdx];
   monitorMat.needsUpdate = true;
-}, 4000);
+}, 2200);
 
 /* ============ loader finish + cinematic intro ============ */
 let intro = null;
@@ -1667,6 +1697,8 @@ function tick() {
     spherical.theta += Math.sin(t * 0.12) * 0.035;
   }
   spherical.phi = THREE.MathUtils.clamp(spherical.phi + peek.pitch, 0.35, 1.45);
+  zoom += (zoomTarget - zoom) * 0.15;
+  spherical.radius *= zoom;
   camOffset.setFromSpherical(spherical);
   camera.position.copy(curTgt).add(camOffset);
   camera.lookAt(curTgt);

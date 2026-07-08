@@ -30,7 +30,6 @@ const PROJECTS = [
     tags: ['NestJS', 'Next.js 15', 'PostgreSQL', 'Prisma'],
     cats: ['client'],
     badge: 'InoventX client',
-    code: 'https://github.com/KushRawat/meest-ops-portal',
   },
   {
     title: 'NBet — promotions & affiliate backend',
@@ -46,7 +45,7 @@ const PROJECTS = [
     cats: ['client'],
     badge: 'freelance · live',
     media: 'assets/media/stazo.jpg',
-    live: 'https://www.stazo.com',
+    live: 'https://www.stazo.in',
   },
   {
     title: 'HealthBridge Mediwise',
@@ -111,6 +110,7 @@ const PROJECTS = [
     tags: ['PHP', 'MySQL', 'Security', 'cron'],
     cats: ['client'],
     badge: 'InoventX client',
+    media: 'assets/media/cardanstock.jpg',
   },
   {
     title: 'ProjectMate — task management',
