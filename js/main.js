@@ -9,7 +9,7 @@ const TOUCH = window.matchMedia('(hover: none)').matches;
 const PROJECTS = [
   {
     title: 'Luna — local desktop AI assistant',
-    blurb: 'Desktop AI assistant that runs LLMs fully on-device — no cloud, no API keys. Electron + node-llama-cpp, React renderer. Built at a hackathon.',
+    blurb: 'Desktop AI assistant that runs LLMs fully on-device: no cloud, no API keys. Electron + node-llama-cpp, React renderer. Built at a hackathon.',
     tags: ['Electron', 'node-llama-cpp', 'React', 'TypeScript'],
     cats: ['ai', 'personal'],
     badge: 'AI · on-device',
@@ -40,7 +40,7 @@ const PROJECTS = [
   },
   {
     title: 'Stazo — backpacker hostel',
-    blurb: 'Full website for a traveler & backpacker hostel in Jibhi, Himachal Pradesh — booking flow, experiences, blog.',
+    blurb: 'Full website for a traveler & backpacker hostel in Jibhi, Himachal Pradesh: booking flow, experiences, blog.',
     tags: ['Next.js', 'Tailwind'],
     cats: ['client'],
     badge: 'freelance · live',
@@ -98,7 +98,7 @@ const PROJECTS = [
   },
   {
     title: 'SpeakerDrain — speaker cleaner',
-    blurb: 'Browser-based phone-speaker cleaner: Web Audio API tone sweeps eject trapped water and dust, no app or backend. Built as a programmatic-SEO product — 18 generated landing pages, FAQ structured data, and an embeddable widget.',
+    blurb: 'Browser-based phone-speaker cleaner: Web Audio API tone sweeps eject trapped water and dust, no app or backend. Built as a programmatic-SEO product with 18 generated landing pages, FAQ structured data, and an embeddable widget.',
     tags: ['Next.js 16', 'Web Audio API', 'SEO'],
     cats: ['personal'],
     badge: 'indie product',
@@ -106,7 +106,7 @@ const PROJECTS = [
   },
   {
     title: 'CardanStock — inventory & alerts',
-    blurb: 'Back-office inventory system for the driveshaft repair shop: stock-movement ledger with transactional row locking, transition-only low-stock email alerts, audit logs, and a bilingual RO/EN UI — dependency-free PHP built to run on cheap shared hosting.',
+    blurb: 'Back-office inventory system for the driveshaft repair shop: stock-movement ledger with transactional row locking, transition-only low-stock email alerts, audit logs, and a bilingual RO/EN UI. Dependency-free PHP built to run on cheap shared hosting.',
     tags: ['PHP', 'MySQL', 'Security', 'cron'],
     cats: ['client'],
     badge: 'InoventX client',
@@ -114,7 +114,7 @@ const PROJECTS = [
   },
   {
     title: 'ProjectMate — task management',
-    blurb: 'Task tracker with filterable views and an analytics dashboard (team workload, weekly completions) — end-to-end typed with tRPC + Zod, Prisma/PostgreSQL, Supabase auth, deployed serverless on AWS via SST.',
+    blurb: 'Task tracker with filterable views and an analytics dashboard (team workload, weekly completions), end-to-end typed with tRPC + Zod, Prisma/PostgreSQL, Supabase auth, deployed serverless on AWS via SST.',
     tags: ['tRPC', 'SST', 'Supabase', 'Prisma'],
     cats: ['personal'],
     badge: 'personal',
@@ -131,7 +131,7 @@ const PROJECTS = [
   },
   {
     title: 'Cardan Service — client website',
-    blurb: 'Marketing/service website for a Bucharest driveshaft-repair business — services catalog, process walkthrough, and rapid-booking flow.',
+    blurb: 'Marketing/service website for a Bucharest driveshaft-repair business: services catalog, process walkthrough, and rapid-booking flow.',
     tags: ['Next.js', 'Tailwind'],
     cats: ['client'],
     badge: 'InoventX client',
@@ -363,7 +363,7 @@ if (REDUCED || seenIntro) {
 
 /* ================= role ticker ================= */
 const ROLES = [
-  'Co-founder @ Trivzy',
+  'Built & run Trivzy',
   'Full-stack engineer',
   'AI-accelerated builder',
   '0 → 1 product shipper',

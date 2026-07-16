@@ -95,8 +95,14 @@ trim2.position.set(-2.98, 0.03, 0);
 shell.add(trim2);
 
 /* ============ lights ============ */
-scene.add(new THREE.AmbientLight(0x8890b0, 0.65));
-scene.add(new THREE.HemisphereLight(0x334, 0x110f18, 0.5));
+const ambient = new THREE.AmbientLight(0x8890b0, 0.65);
+scene.add(ambient);
+const hemi = new THREE.HemisphereLight(0x334, 0x110f18, 0.5);
+scene.add(hemi);
+
+// mutable light bases — the day/night preset system lerps these; the "life"
+// flicker animatables multiply them instead of writing absolute values
+const rig = { neonOpacity: 1, neonLight: 3.6, tvGlow: 4.4, screenGlow: 6, dustOpacity: 0.55 };
 
 const warm = new THREE.PointLight(0xffa550, 9, 9, 2);
 warm.position.set(2.65, 1.55, -0.85); // floor lamp head
@@ -270,7 +276,7 @@ function posterTexture() {
   g.fillText('FULL-STACK ENGINEER', 60, 390);
   g.fillStyle = '#9aa1b5';
   g.font = '24px "JetBrains Mono", monospace';
-  g.fillText('co-founder · builder', 60, 560);
+  g.fillText('builder · shipper', 60, 560);
   const t = new THREE.CanvasTexture(cv);
   t.colorSpace = THREE.SRGBColorSpace;
   return t;
@@ -299,37 +305,76 @@ function shadowBlob(x, z, r, stretch = 1) {
 }
 
 // night-skyline window texture (Jibhi mountains + stars + moon)
-function windowTexture() {
+// night-skyline / day / golden-hour window textures (Jibhi mountains)
+function windowTexture(mode = 'night') {
   const cv = document.createElement('canvas');
   cv.width = 512; cv.height = 340;
   const g = cv.getContext('2d');
   const sky = g.createLinearGradient(0, 0, 0, 340);
-  sky.addColorStop(0, '#0a1030');
-  sky.addColorStop(0.7, '#141b45');
-  sky.addColorStop(1, '#1d2452');
+  if (mode === 'day') {
+    sky.addColorStop(0, '#7db4e8'); sky.addColorStop(0.65, '#a8cdf0'); sky.addColorStop(1, '#cfe3f5');
+  } else if (mode === 'dusk') {
+    sky.addColorStop(0, '#3a2a55'); sky.addColorStop(0.5, '#b0522e'); sky.addColorStop(0.8, '#f2913e'); sky.addColorStop(1, '#f7b25a');
+  } else {
+    sky.addColorStop(0, '#0a1030'); sky.addColorStop(0.7, '#141b45'); sky.addColorStop(1, '#1d2452');
+  }
   g.fillStyle = sky;
   g.fillRect(0, 0, 512, 340);
-  for (let i = 0; i < 90; i++) {
-    g.fillStyle = `rgba(255,255,255,${0.25 + Math.random() * 0.6})`;
-    g.fillRect(Math.random() * 512, Math.random() * 220, 1.4, 1.4);
+
+  if (mode === 'night') {
+    for (let i = 0; i < 90; i++) {
+      g.fillStyle = `rgba(255,255,255,${0.25 + Math.random() * 0.6})`;
+      g.fillRect(Math.random() * 512, Math.random() * 220, 1.4, 1.4);
+    }
+    g.fillStyle = '#e8ecff';
+    g.beginPath(); g.arc(408, 66, 26, 0, Math.PI * 2); g.fill();
+    g.fillStyle = '#0a1030';
+    g.beginPath(); g.arc(398, 58, 22, 0, Math.PI * 2); g.fill();
+  } else if (mode === 'day') {
+    // sun with soft glow
+    let glow = g.createRadialGradient(120, 70, 8, 120, 70, 60);
+    glow.addColorStop(0, 'rgba(255,250,220,1)'); glow.addColorStop(0.35, 'rgba(255,244,200,0.85)'); glow.addColorStop(1, 'rgba(255,244,200,0)');
+    g.fillStyle = glow; g.fillRect(40, 0, 180, 160);
+    // clouds
+    g.fillStyle = 'rgba(255,255,255,0.85)';
+    for (const [cx, cy, s] of [[300, 70, 1], [420, 110, 0.7], [200, 130, 0.55]]) {
+      g.beginPath();
+      g.ellipse(cx, cy, 46 * s, 15 * s, 0, 0, Math.PI * 2);
+      g.ellipse(cx + 28 * s, cy - 8 * s, 30 * s, 13 * s, 0, 0, Math.PI * 2);
+      g.ellipse(cx - 30 * s, cy - 5 * s, 26 * s, 11 * s, 0, 0, Math.PI * 2);
+      g.fill();
+    }
+    // birds
+    g.strokeStyle = 'rgba(40,55,80,0.7)'; g.lineWidth = 2;
+    for (const [bx, by] of [[250, 55], [275, 48], [235, 40]]) {
+      g.beginPath(); g.arc(bx - 5, by, 6, Math.PI * 1.1, Math.PI * 1.9);
+      g.arc(bx + 5, by, 6, Math.PI * 1.1, Math.PI * 1.9); g.stroke();
+    }
+  } else { // dusk: low sun on the horizon
+    let glow = g.createRadialGradient(256, 235, 6, 256, 235, 90);
+    glow.addColorStop(0, 'rgba(255,235,180,1)'); glow.addColorStop(0.3, 'rgba(255,190,110,0.9)'); glow.addColorStop(1, 'rgba(255,160,80,0)');
+    g.fillStyle = glow; g.fillRect(150, 140, 220, 190);
+    g.fillStyle = '#ffe9c2';
+    g.beginPath(); g.arc(256, 235, 18, 0, Math.PI * 2); g.fill();
   }
-  g.fillStyle = '#e8ecff';
-  g.beginPath(); g.arc(408, 66, 26, 0, Math.PI * 2); g.fill();
-  g.fillStyle = '#0a1030';
-  g.beginPath(); g.arc(398, 58, 22, 0, Math.PI * 2); g.fill();
-  // mountain layers
-  g.fillStyle = '#101638';
+
+  // mountain layers (shared silhouettes, tinted per mode)
+  const m1 = mode === 'day' ? '#4a6f8f' : mode === 'dusk' ? '#472b3d' : '#101638';
+  const m2 = mode === 'day' ? '#33546f' : mode === 'dusk' ? '#2c1a2e' : '#0b0f28';
+  g.fillStyle = m1;
   g.beginPath(); g.moveTo(0, 260);
   g.lineTo(90, 170); g.lineTo(200, 250); g.lineTo(300, 150); g.lineTo(420, 240); g.lineTo(512, 190);
   g.lineTo(512, 340); g.lineTo(0, 340); g.closePath(); g.fill();
-  g.fillStyle = '#0b0f28';
+  g.fillStyle = m2;
   g.beginPath(); g.moveTo(0, 300);
   g.lineTo(120, 230); g.lineTo(260, 300); g.lineTo(390, 220); g.lineTo(512, 290);
   g.lineTo(512, 340); g.lineTo(0, 340); g.closePath(); g.fill();
-  // tiny warm lights in the valley
-  for (let i = 0; i < 14; i++) {
-    g.fillStyle = 'rgba(255,190,110,0.9)';
-    g.fillRect(30 + Math.random() * 450, 285 + Math.random() * 40, 2, 2);
+  // tiny warm lights in the valley (night + dusk only)
+  if (mode !== 'day') {
+    for (let i = 0; i < 14; i++) {
+      g.fillStyle = 'rgba(255,190,110,0.9)';
+      g.fillRect(30 + Math.random() * 450, 285 + Math.random() * 40, 2, 2);
+    }
   }
   const t = new THREE.CanvasTexture(cv);
   t.colorSpace = THREE.SRGBColorSpace;
@@ -558,7 +603,7 @@ Promise.all(MODELS.map(loadModel)).then(() => {
   scene.add(hostel);
   registerHotspot('trivzy', hostel, {
     pos: [-0.9, 2.0, -1.2], tgt: [-2.0, 2.15, -2.75],
-  }, 'Trivzy — my startup', [-2.0, 2.75, -2.65]);
+  }, 'Trivzy — built & run by me', [-2.0, 2.75, -2.65]);
   shelf.userData.hotspot = 'trivzy';
   shelf.traverse((c) => { c.userData.hotspot = 'trivzy'; });
 
@@ -612,9 +657,14 @@ Promise.all(MODELS.map(loadModel)).then(() => {
   table.traverse((c) => { c.userData.hotspot = 'contact'; });
 
   /* ---- window with night skyline (left wall) ---- */
+  const winTextures = {
+    night: windowTexture('night'),
+    day: windowTexture('day'),
+    dusk: windowTexture('dusk'),
+  };
   const win = new THREE.Mesh(
     new THREE.PlaneGeometry(1.45, 0.95),
-    new THREE.MeshBasicMaterial({ map: windowTexture() })
+    new THREE.MeshBasicMaterial({ map: winTextures.night })
   );
   win.rotation.y = Math.PI / 2;
   win.position.set(-2.99, 1.75, -1.55);
@@ -711,17 +761,141 @@ Promise.all(MODELS.map(loadModel)).then(() => {
     dustGeo.attributes.position.needsUpdate = true;
   });
 
-  /* ---- life: TV glow + neon flicker ---- */
+  /* ---- life: TV glow + neon flicker (scaled by the day/night rig) ---- */
   animatables.push((t) => {
-    tvGlow.intensity = 4.4 + Math.sin(t * 11.3) * 0.35 + Math.sin(t * 23.7) * 0.25;
+    tvGlow.intensity = rig.tvGlow * (1 + Math.sin(t * 11.3) * 0.08 + Math.sin(t * 23.7) * 0.057);
   });
   const neonMat = neon.material;
   animatables.push((t) => {
     let o = 0.94 + Math.sin(t * 1.7) * 0.06;
     if (Math.sin(t * 0.43) > 0.997) o = 0.35; // rare buzz-out
-    neonMat.opacity = o;
-    neonLight.intensity = 3.6 * o;
+    neonMat.opacity = rig.neonOpacity * o;
+    neonLight.intensity = rig.neonLight * o;
   });
+
+  /* ============ day / golden hour / night lighting ============ */
+  // Initial mode follows the visitor's local clock; the wall switch cycles it.
+  // ?time=day|dusk|night overrides (shareable/demoable).
+  const LIGHT_PRESETS = {
+    day: {
+      bg: 0x13203a, ambC: 0xd6deee, ambI: 1.9, hemI: 1.1,
+      keyC: 0xfff1d0, keyI: 2.1, winC: 0xffe6b8, winI: 7,
+      warm: 0, neonO: 0.12, neonL: 0.3, tv: 1.6, screen: 2.4,
+      dustO: 0.75, dustC: 0xffe6b8, wallC: 0x35415f, floorB: 1.8, tex: 'day',
+    },
+    dusk: {
+      bg: 0x0a0812, ambC: 0xbf9a92, ambI: 0.95, hemI: 0.6,
+      keyC: 0xff9a5c, keyI: 1.15, winC: 0xff8c4a, winI: 6,
+      warm: 6, neonO: 0.75, neonL: 2.4, tv: 3.2, screen: 4,
+      dustO: 0.65, dustC: 0xffb37a, wallC: 0x1e1522, floorB: 1.15, tex: 'dusk',
+    },
+    night: {
+      bg: 0x05060a, ambC: 0x8890b0, ambI: 0.65, hemI: 0.5,
+      keyC: 0xbcc7ff, keyI: 0.7, winC: 0x7799ff, winI: 4,
+      warm: 9, neonO: 1, neonL: 3.6, tv: 4.4, screen: 6,
+      dustO: 0.55, dustC: 0xaabbff, wallC: 0x11131e, floorB: 1.0, tex: 'night',
+    },
+  };
+  const LIGHT_ORDER = ['day', 'dusk', 'night'];
+
+  const lightCur = {
+    bg: new THREE.Color(0x05060a), ambC: new THREE.Color(0x8890b0), ambI: 0.65, hemI: 0.5,
+    keyC: new THREE.Color(0xbcc7ff), keyI: 0.7, winC: new THREE.Color(0x7799ff), winI: 4,
+    warm: 9, neonO: 1, neonL: 3.6, tv: 4.4, screen: 6, dustO: 0.55, dustC: new THREE.Color(0xaabbff),
+    wallC: new THREE.Color(0x11131e), floorB: 1.0,
+  };
+  const lightTgt = { ...LIGHT_PRESETS.night, };
+  let lightMode = 'night';
+
+  // the wall switch (plate + nub) on the back wall, right side
+  const switchPlate = new THREE.Mesh(
+    new THREE.BoxGeometry(0.11, 0.17, 0.022),
+    new THREE.MeshStandardMaterial({ color: 0xe6e2d6, roughness: 0.7 })
+  );
+  switchPlate.position.set(2.62, 1.25, -2.98);
+  scene.add(switchPlate);
+  const switchNub = new THREE.Mesh(
+    new THREE.BoxGeometry(0.04, 0.055, 0.03),
+    new THREE.MeshStandardMaterial({ color: 0x8b5cf6, roughness: 0.5 })
+  );
+  switchNub.position.set(2.62, 1.215, -2.965);
+  scene.add(switchNub);
+  const NUB_Y = { day: 1.295, dusk: 1.25, night: 1.205 };
+
+  function applyLightTarget(mode) {
+    const p = LIGHT_PRESETS[mode];
+    Object.assign(lightTgt, p);
+    lightMode = mode;
+    win.material.map = winTextures[p.tex];
+    win.material.needsUpdate = true;
+    try { history.replaceState(null, '', mode === timeModeNow() ? location.pathname : `?time=${mode}`); } catch (e) { /* noop */ }
+  }
+  function timeModeNow() {
+    const h = new Date().getHours();
+    if (h >= 7 && h < 16) return 'day';
+    if ((h >= 16 && h < 19) || (h >= 5 && h < 7)) return 'dusk';
+    return 'night';
+  }
+  function setLightMode(mode, instant = false) {
+    if (!LIGHT_PRESETS[mode]) return;
+    applyLightTarget(mode);
+    if (instant) snapLights();
+  }
+  function cycleLights() {
+    const next = LIGHT_ORDER[(LIGHT_ORDER.indexOf(lightMode) + 1) % LIGHT_ORDER.length];
+    setLightMode(next);
+    blip(next === 'day' ? 700 : next === 'dusk' ? 520 : 360, next === 'day' ? 940 : next === 'dusk' ? 700 : 480);
+  }
+  window.__lights = { get mode() { return lightMode; }, set: setLightMode, cycle: cycleLights };
+
+  function snapLights() {
+    lightCur.bg.setHex(lightTgt.bg); lightCur.ambC.setHex(lightTgt.ambC);
+    lightCur.keyC.setHex(lightTgt.keyC); lightCur.winC.setHex(lightTgt.winC);
+    lightCur.dustC.setHex(lightTgt.dustC); lightCur.wallC.setHex(lightTgt.wallC);
+    for (const k of ['ambI', 'hemI', 'keyI', 'winI', 'warm', 'neonO', 'neonL', 'tv', 'screen', 'dustO', 'floorB']) lightCur[k] = lightTgt[k];
+  }
+
+  const tgtColor = new THREE.Color();
+  animatables.push((t, dt) => {
+    const f = Math.min(1, dt * 2.2); // ~0.5s to settle
+    lightCur.bg.lerp(tgtColor.setHex(lightTgt.bg), f);
+    lightCur.ambC.lerp(tgtColor.setHex(lightTgt.ambC), f);
+    lightCur.keyC.lerp(tgtColor.setHex(lightTgt.keyC), f);
+    lightCur.winC.lerp(tgtColor.setHex(lightTgt.winC), f);
+    lightCur.dustC.lerp(tgtColor.setHex(lightTgt.dustC), f);
+    lightCur.wallC.lerp(tgtColor.setHex(lightTgt.wallC), f);
+    for (const k of ['ambI', 'hemI', 'keyI', 'winI', 'warm', 'neonO', 'neonL', 'tv', 'screen', 'dustO', 'floorB']) {
+      lightCur[k] += (lightTgt[k] - lightCur[k]) * f;
+    }
+    scene.background.copy(lightCur.bg);
+    scene.fog.color.copy(lightCur.bg);
+    ambient.color.copy(lightCur.ambC); ambient.intensity = lightCur.ambI;
+    hemi.intensity = lightCur.hemI;
+    key.color.copy(lightCur.keyC); key.intensity = lightCur.keyI;
+    moonlight.color.copy(lightCur.winC); moonlight.intensity = lightCur.winI;
+    warm.intensity = lightCur.warm;
+    screenGlow.intensity = lightCur.screen;
+    rig.neonOpacity = lightCur.neonO; rig.neonLight = lightCur.neonL; rig.tvGlow = lightCur.tv;
+    dust.material.opacity = lightCur.dustO;
+    dust.material.color.copy(lightCur.dustC);
+    wallMat.color.copy(lightCur.wallC);
+    // floor albedo is a dark texture; components >1 over-brighten it for daytime
+    floorMat.color.setScalar(lightCur.floorB);
+    // ease the switch nub to its position for the current mode
+    switchNub.position.y += (NUB_Y[lightMode] - switchNub.position.y) * Math.min(1, dt * 10);
+  });
+
+  // clickable hotspot (no camera move — handled specially in the click handler)
+  registerHotspot('lights', switchPlate, {
+    pos: [5.3, 4.1, 5.6], tgt: [-0.2, 0.7, -0.4], // unused; click never navigates
+  }, 'Light switch — change the time of day', [2.62, 1.55, -2.94]);
+  switchNub.userData.hotspot = 'lights';
+
+  // initial mode: URL param wins, else the visitor's local time
+  {
+    const urlMode = new URLSearchParams(location.search).get('time');
+    setLightMode(LIGHT_PRESETS[urlMode] ? urlMode : timeModeNow(), true);
+  }
 
   /* ---- paper toss game ---- */
   registerHotspot('toss', trash, {
@@ -1456,6 +1630,7 @@ function activateHotspot(clientX, clientY) {
   if (!id) return;
   hovered = id;
   const h = hotspots[id];
+  if (id === 'lights') { window.__lights.cycle(); return; } // flip the room, stay put
   blip(440, 700);
   if (id === 'toss') { startGame(); return; }
   if (id === 'deploy') { startDeploy(); return; }
@@ -1481,9 +1656,9 @@ document.getElementById('rpanelClose').addEventListener('click', () => {
 
 const PANELS = {
   projects: `
-    <h2>Projects</h2><span class="sub mono">on the monitor — real shipped work</span>
+    <h2>Projects</h2><span class="sub mono">on the monitor: real shipped work</span>
     <ul>
-      <li><h3>Trivzy</h3><p>Hostel concierge & ops platform I co-founded. Live with 300+ check-ins.</p><a href="https://trivzy.in" target="_blank" rel="noopener">trivzy.in ↗</a></li>
+      <li><h3>Trivzy</h3><p>Hostel concierge & ops platform I built and run. Live with 300+ check-ins.</p><a href="https://trivzy.in" target="_blank" rel="noopener">trivzy.in ↗</a></li>
       <li><h3>Luna</h3><p>Desktop AI assistant running LLMs fully on-device (Electron + node-llama-cpp).</p></li>
       <li><h3>CaseFlow</h3><p>50k-row CSV import → validate → fix → track pipeline.</p><a href="https://caseflow-frontend.vercel.app" target="_blank" rel="noopener">live ↗</a></li>
       <li><h3>InoCloud</h3><p>Compliance-grade e-Factura invoicing SaaS for Romania, built from scratch at InoventX.</p></li>
@@ -1502,9 +1677,9 @@ const PANELS = {
     </div>
     <p style="margin-top:1rem">Want sound and full screen? <a href="../#projects">Watch them on the classic site →</a></p>`,
   trivzy: `
-    <h2>Trivzy</h2><span class="sub mono">co-founder</span>
-    <p>My startup — a hostel concierge & operations platform. Guests get an AI chatbot, self check-in with document + signature upload, food ordering and vehicle rentals; operators get full admin dashboards.</p>
-    <p>Live in production: first hostel onboarded, <strong style="color:#e8eaf2">300+ guest check-ins</strong>. iOS & Android apps in development. I own every line of the tech.</p>
+    <h2>Trivzy</h2><span class="sub mono">built & run by me</span>
+    <p>A hostel concierge & operations platform I built end to end. Guests get an AI chatbot, self check-in with document + signature upload, food ordering and vehicle rentals; operators get full admin dashboards.</p>
+    <p>Live in production: first hostel onboarded, <strong style="color:#e8eaf2">300+ guest check-ins</strong>. I own every line of the tech.</p>
     <a class="cta" href="https://trivzy.in" target="_blank" rel="noopener">visit trivzy.in ↗</a>`,
   contact: `
     <h2>Contact</h2><span class="sub mono">the phone is always on</span>
