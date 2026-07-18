@@ -603,7 +603,7 @@ Promise.all(MODELS.map(loadModel)).then(() => {
   scene.add(hostel);
   registerHotspot('trivzy', hostel, {
     pos: [-0.9, 2.0, -1.2], tgt: [-2.0, 2.15, -2.75],
-  }, 'Trivzy — built & run by me', [-2.0, 2.75, -2.65]);
+  }, 'Trivzy — I build all the tech', [-2.0, 2.75, -2.65]);
   shelf.userData.hotspot = 'trivzy';
   shelf.traverse((c) => { c.userData.hotspot = 'trivzy'; });
 
@@ -1658,7 +1658,7 @@ const PANELS = {
   projects: `
     <h2>Projects</h2><span class="sub mono">on the monitor: real shipped work</span>
     <ul>
-      <li><h3>Trivzy</h3><p>Hostel concierge & ops platform I built and run. Live with 300+ check-ins.</p><a href="https://trivzy.in" target="_blank" rel="noopener">trivzy.in ↗</a></li>
+      <li><h3>Trivzy</h3><p>Hostel concierge & ops platform; I built and run all of its tech. Live with 300+ check-ins.</p><a href="https://trivzy.in" target="_blank" rel="noopener">trivzy.in ↗</a></li>
       <li><h3>Luna</h3><p>Desktop AI assistant running LLMs fully on-device (Electron + node-llama-cpp).</p></li>
       <li><h3>CaseFlow</h3><p>50k-row CSV import → validate → fix → track pipeline.</p><a href="https://caseflow-frontend.vercel.app" target="_blank" rel="noopener">live ↗</a></li>
       <li><h3>InoCloud</h3><p>Compliance-grade e-Factura invoicing SaaS for Romania, built from scratch at InoventX.</p></li>
@@ -1677,7 +1677,7 @@ const PANELS = {
     </div>
     <p style="margin-top:1rem">Want sound and full screen? <a href="../#projects">Watch them on the classic site →</a></p>`,
   trivzy: `
-    <h2>Trivzy</h2><span class="sub mono">built & run by me</span>
+    <h2>Trivzy</h2><span class="sub mono">the tech is all mine</span>
     <p>A hostel concierge & operations platform I built end to end. Guests get an AI chatbot, self check-in with document + signature upload, food ordering and vehicle rentals; operators get full admin dashboards.</p>
     <p>Live in production: first hostel onboarded, <strong style="color:#e8eaf2">300+ guest check-ins</strong>. I own every line of the tech.</p>
     <a class="cta" href="https://trivzy.in" target="_blank" rel="noopener">visit trivzy.in ↗</a>`,

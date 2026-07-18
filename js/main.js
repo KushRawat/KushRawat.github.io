@@ -363,7 +363,7 @@ if (REDUCED || seenIntro) {
 
 /* ================= role ticker ================= */
 const ROLES = [
-  'Built & run Trivzy',
+  'Building Trivzy',
   'Full-stack engineer',
   'AI-accelerated builder',
   '0 → 1 product shipper',
