@@ -137,15 +137,6 @@ const PROJECTS = [
     badge: 'InoventX client',
     media: 'assets/media/cardan.jpg',
   },
-  {
-    title: 'Ecom — nth-order discounts',
-    blurb: 'TypeScript + Express e-commerce service: carts, checkout, every-nth-order discount codes, admin stats surface.',
-    tags: ['TypeScript', 'Express'],
-    cats: ['challenge'],
-    badge: 'challenge',
-    media: 'assets/media/ecom.jpg',
-    code: 'https://github.com/KushRawat/ecom',
-  },
 ];
 
 /* ================= render grid ================= */
