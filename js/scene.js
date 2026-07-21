@@ -23,7 +23,7 @@ function init() {
   renderer.setSize(window.innerWidth, window.innerHeight);
 
   const scene = new THREE.Scene();
-  scene.fog = new THREE.FogExp2(0x05060a, 0.045);
+  scene.fog = new THREE.FogExp2(0x080a10, 0.045);
 
   const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 120);
   camera.position.set(0, 2.2, 7.5);
@@ -92,8 +92,8 @@ function init() {
     uTime: { value: 0 },
     uProgress: { value: 0 },
     uWarp: { value: 0 }, // 0→1 hyperspace surge when entering the 3D room
-    uColorA: { value: new THREE.Color(0x8b5cf6) },
-    uColorB: { value: new THREE.Color(0x22d3ee) },
+    uColorA: { value: new THREE.Color(0x3b82f6) },
+    uColorB: { value: new THREE.Color(0xfb923c) },
     uPixelRatio: { value: renderer.getPixelRatio() },
   };
 
@@ -196,16 +196,16 @@ function init() {
   starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
   const stars = new THREE.Points(
     starGeo,
-    new THREE.PointsMaterial({ color: 0x9aa1b5, size: 0.035, transparent: true, opacity: 0.55, depthWrite: false })
+    new THREE.PointsMaterial({ color: 0x6b7793, size: 0.035, transparent: true, opacity: 0.55, depthWrite: false })
   );
   scene.add(stars);
 
   // ---------- palette stops (per scroll phase) ----------
   const PALETTES = [
-    [new THREE.Color(0x8b5cf6), new THREE.Color(0x22d3ee)], // hero: violet/cyan
-    [new THREE.Color(0x22d3ee), new THREE.Color(0xf472b6)], // projects: cyan/pink
-    [new THREE.Color(0xf472b6), new THREE.Color(0x8b5cf6)], // experience: pink/violet
-    [new THREE.Color(0x34d399), new THREE.Color(0x22d3ee)], // contact: emerald/cyan
+    [new THREE.Color(0x2563eb), new THREE.Color(0xfb923c)], // hero: blue valley / orange peak (the duo)
+    [new THREE.Color(0xc2410c), new THREE.Color(0xfbbf24)], // projects: warm orange / amber
+    [new THREE.Color(0x1e40af), new THREE.Color(0x60a5fa)], // experience: deep blue / sky
+    [new THREE.Color(0x2f5fb8), new THREE.Color(0xfb923c)], // contact: blue field / warm embers — late night, lamp on
   ];
   const colA = new THREE.Color(), colB = new THREE.Color();
   function paletteAt(p) {

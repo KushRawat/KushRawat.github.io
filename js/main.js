@@ -390,6 +390,22 @@ if (!REDUCED) {
 }
 
 /* ================= portal to the 3D room ================= */
+// the playground's lighting follows the visitor's clock; the hero line says so
+const heroClock = document.getElementById('heroClock');
+if (heroClock) {
+  const phase = (h) =>
+    h >= 7 && h < 16 ? 'daylight inside'
+    : (h >= 16 && h < 19) || (h >= 5 && h < 7) ? 'dusk inside'
+    : "the lamp's on inside";
+  const tickClock = () => {
+    const d = new Date();
+    const t = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+    heroClock.textContent = ` — ${t}, ${phase(d.getHours())}`;
+  };
+  tickClock();
+  setInterval(tickClock, 30000);
+}
+
 // warp-out: the particle field surges past the camera, UI fades, then navigate
 document.querySelectorAll('a[href="room/"]').forEach((a) => {
   a.addEventListener('click', (e) => {

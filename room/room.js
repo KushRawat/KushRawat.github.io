@@ -27,8 +27,8 @@ renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.15;
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x05060a);
-scene.fog = new THREE.Fog(0x05060a, 12, 24);
+scene.background = new THREE.Color(0x080a10);
+scene.fog = new THREE.Fog(0x080a10, 12, 24);
 
 const camera = new THREE.PerspectiveCamera(42, window.innerWidth / window.innerHeight, 0.1, 60);
 
@@ -69,7 +69,7 @@ function floorTexture() {
 }
 const floorMat = new THREE.MeshStandardMaterial({ map: floorTexture(), roughness: 0.9 });
 const wallMat = new THREE.MeshStandardMaterial({ color: 0x11131e, roughness: 1 });
-const trimMat = new THREE.MeshStandardMaterial({ color: 0x8b5cf6, roughness: 0.6, emissive: 0x2a1a55, emissiveIntensity: 0.6 });
+const trimMat = new THREE.MeshStandardMaterial({ color: 0x3b82f6, roughness: 0.6, emissive: 0x0a1e3a, emissiveIntensity: 0.6 });
 
 const floor = new THREE.Mesh(new THREE.BoxGeometry(6.4, 0.2, 6.4), floorMat);
 floor.position.y = -0.1;
@@ -112,11 +112,11 @@ warm.shadow.mapSize.set(1024, 1024);
 warm.shadow.bias = -0.002;
 scene.add(warm);
 
-const screenGlow = new THREE.PointLight(0x22d3ee, 6, 4, 2);
+const screenGlow = new THREE.PointLight(0xbfd4e6, 6, 4, 2);
 screenGlow.position.set(0.5, 1.15, -2.2);
 scene.add(screenGlow);
 
-const tvGlow = new THREE.PointLight(0x8b5cf6, 5, 4.5, 2);
+const tvGlow = new THREE.PointLight(0xff8c50, 5, 4.5, 2);
 tvGlow.position.set(-2.2, 1.0, 0.3);
 scene.add(tvGlow);
 
@@ -200,9 +200,9 @@ function makePulseSprite(pos) {
   cv.width = cv.height = 64;
   const g = cv.getContext('2d');
   const grad = g.createRadialGradient(32, 32, 2, 32, 32, 30);
-  grad.addColorStop(0, 'rgba(34,211,238,1)');
-  grad.addColorStop(0.35, 'rgba(34,211,238,0.5)');
-  grad.addColorStop(1, 'rgba(34,211,238,0)');
+  grad.addColorStop(0, 'rgba(251,146,60,1)');
+  grad.addColorStop(0.35, 'rgba(251,146,60,0.5)');
+  grad.addColorStop(1, 'rgba(251,146,60,0)');
   g.fillStyle = grad;
   g.fillRect(0, 0, 64, 64);
   const tex = new THREE.CanvasTexture(cv);
@@ -265,16 +265,16 @@ function posterTexture() {
   g.lineWidth = 6;
   g.strokeRect(14, 14, 484, 632);
   const grad = g.createLinearGradient(60, 0, 460, 0);
-  grad.addColorStop(0, '#8b5cf6');
-  grad.addColorStop(1, '#22d3ee');
+  grad.addColorStop(0, '#3b82f6');
+  grad.addColorStop(1, '#fb923c');
   g.fillStyle = grad;
-  g.font = '700 92px "Space Grotesk", sans-serif';
+  g.font = '700 92px "Fraunces", serif';
   g.fillText('KUSH', 60, 200);
   g.fillText('RAWAT', 60, 300);
-  g.fillStyle = '#e8eaf2';
-  g.font = '500 34px "Space Grotesk", sans-serif';
+  g.fillStyle = '#ece6da';
+  g.font = '500 34px "Fraunces", serif';
   g.fillText('FULL-STACK ENGINEER', 60, 390);
-  g.fillStyle = '#9aa1b5';
+  g.fillStyle = '#a89f8f';
   g.font = '24px "JetBrains Mono", monospace';
   g.fillText('builder · shipper', 60, 560);
   const t = new THREE.CanvasTexture(cv);
@@ -392,13 +392,13 @@ function statTexture(big, label) {
   g.lineWidth = 5;
   g.strokeRect(10, 10, 380, 260);
   const grad = g.createLinearGradient(40, 0, 360, 0);
-  grad.addColorStop(0, '#8b5cf6');
-  grad.addColorStop(1, '#22d3ee');
+  grad.addColorStop(0, '#3b82f6');
+  grad.addColorStop(1, '#fb923c');
   g.fillStyle = grad;
-  g.font = '700 88px "Space Grotesk", sans-serif';
+  g.font = '700 88px "Fraunces", serif';
   g.textAlign = 'center';
   g.fillText(big, 200, 140);
-  g.fillStyle = '#9aa1b5';
+  g.fillStyle = '#a89f8f';
   g.font = '500 26px "JetBrains Mono", monospace';
   g.fillText(label, 200, 205);
   const t = new THREE.CanvasTexture(cv);
@@ -428,11 +428,11 @@ function neonTexture(text) {
   cv.width = 1024; cv.height = 256;
   const g = cv.getContext('2d');
   g.clearRect(0, 0, 1024, 256);
-  g.font = '700 120px "Space Grotesk", sans-serif';
+  g.font = '700 120px "Fraunces", serif';
   g.textAlign = 'center';
-  g.shadowColor = '#22d3ee';
+  g.shadowColor = '#fb923c';
   g.shadowBlur = 45;
-  g.strokeStyle = '#7ceef7';
+  g.strokeStyle = '#ffd9a0';
   g.lineWidth = 5;
   g.strokeText(text, 512, 160);
   const t = new THREE.CanvasTexture(cv);
@@ -586,7 +586,7 @@ Promise.all(MODELS.map(loadModel)).then(() => {
   hRoof.rotation.y = Math.PI / 4;
   const hDoor = new THREE.Mesh(
     new THREE.BoxGeometry(0.07, 0.11, 0.02),
-    new THREE.MeshStandardMaterial({ color: 0x8b5cf6 })
+    new THREE.MeshStandardMaterial({ color: 0xfb923c })
   );
   hDoor.position.set(0, 0.06, 0.115);
   const hSign = new THREE.Mesh(
@@ -622,7 +622,7 @@ Promise.all(MODELS.map(loadModel)).then(() => {
   );
   neon.position.set(0.4, 2.35, -2.99);
   scene.add(neon);
-  const neonLight = new THREE.PointLight(0x22d3ee, 4, 3.5, 2);
+  const neonLight = new THREE.PointLight(0xfb923c, 4, 3.5, 2);
   neonLight.position.set(0.4, 2.3, -2.6);
   scene.add(neonLight);
 
@@ -642,7 +642,7 @@ Promise.all(MODELS.map(loadModel)).then(() => {
   );
   const pScreen = new THREE.Mesh(
     new THREE.PlaneGeometry(0.08, 0.165),
-    new THREE.MeshBasicMaterial({ color: 0x22d3ee })
+    new THREE.MeshBasicMaterial({ color: 0xfb923c })
   );
   pScreen.rotation.x = -Math.PI / 2;
   pScreen.position.y = 0.007;
@@ -790,7 +790,7 @@ Promise.all(MODELS.map(loadModel)).then(() => {
       dustO: 0.65, dustC: 0xffb37a, wallC: 0x1e1522, floorB: 1.15, tex: 'dusk',
     },
     night: {
-      bg: 0x05060a, ambC: 0x8890b0, ambI: 0.65, hemI: 0.5,
+      bg: 0x080a10, ambC: 0x8890b0, ambI: 0.65, hemI: 0.5,
       keyC: 0xbcc7ff, keyI: 0.7, winC: 0x7799ff, winI: 4,
       warm: 9, neonO: 1, neonL: 3.6, tv: 4.4, screen: 6,
       dustO: 0.55, dustC: 0xaabbff, wallC: 0x11131e, floorB: 1.0, tex: 'night',
@@ -799,7 +799,7 @@ Promise.all(MODELS.map(loadModel)).then(() => {
   const LIGHT_ORDER = ['day', 'dusk', 'night'];
 
   const lightCur = {
-    bg: new THREE.Color(0x05060a), ambC: new THREE.Color(0x8890b0), ambI: 0.65, hemI: 0.5,
+    bg: new THREE.Color(0x080a10), ambC: new THREE.Color(0x8890b0), ambI: 0.65, hemI: 0.5,
     keyC: new THREE.Color(0xbcc7ff), keyI: 0.7, winC: new THREE.Color(0x7799ff), winI: 4,
     warm: 9, neonO: 1, neonL: 3.6, tv: 4.4, screen: 6, dustO: 0.55, dustC: new THREE.Color(0xaabbff),
     wallC: new THREE.Color(0x11131e), floorB: 1.0,
@@ -816,7 +816,7 @@ Promise.all(MODELS.map(loadModel)).then(() => {
   scene.add(switchPlate);
   const switchNub = new THREE.Mesh(
     new THREE.BoxGeometry(0.04, 0.055, 0.03),
-    new THREE.MeshStandardMaterial({ color: 0x8b5cf6, roughness: 0.5 })
+    new THREE.MeshStandardMaterial({ color: 0x3b82f6, roughness: 0.5 })
   );
   switchNub.position.set(2.62, 1.215, -2.965);
   scene.add(switchNub);
@@ -938,7 +938,7 @@ Promise.all(MODELS.map(loadModel)).then(() => {
   const aimGeo = new THREE.BufferGeometry();
   aimGeo.setAttribute('position', new THREE.BufferAttribute(aimPos, 3));
   const aim = new THREE.Points(aimGeo, new THREE.PointsMaterial({
-    color: 0x22d3ee, size: TOUCH ? 0.03 : 0.022, transparent: true, opacity: 0.9, depthWrite: false,
+    color: 0xfb923c, size: TOUCH ? 0.03 : 0.022, transparent: true, opacity: 0.9, depthWrite: false,
   }));
   aim.visible = false;
   scene.add(aim);
@@ -946,7 +946,7 @@ Promise.all(MODELS.map(loadModel)).then(() => {
   // target ring on the bin rim — shows the goal (esp. on touch, no cursor)
   const targetRing = new THREE.Mesh(
     new THREE.RingGeometry(RIM.r * 0.75, RIM.r * 1.05, 28),
-    new THREE.MeshBasicMaterial({ color: 0x22d3ee, transparent: true, opacity: 0.55, side: THREE.DoubleSide, depthWrite: false })
+    new THREE.MeshBasicMaterial({ color: 0x3b82f6, transparent: true, opacity: 0.55, side: THREE.DoubleSide, depthWrite: false })
   );
   targetRing.rotation.x = -Math.PI / 2;
   targetRing.position.set(RIM.x, RIM.y + 0.02, RIM.z);
@@ -956,7 +956,7 @@ Promise.all(MODELS.map(loadModel)).then(() => {
   // landing reticle — the aiming "crosshair": where the ball is predicted to land
   const reticle = new THREE.Mesh(
     new THREE.RingGeometry(0.05, 0.075, 22),
-    new THREE.MeshBasicMaterial({ color: 0xf472b6, transparent: true, opacity: 0.95, side: THREE.DoubleSide, depthWrite: false })
+    new THREE.MeshBasicMaterial({ color: 0xff4d3d, transparent: true, opacity: 0.95, side: THREE.DoubleSide, depthWrite: false })
   );
   reticle.rotation.x = -Math.PI / 2;
   reticle.visible = false;
@@ -1077,7 +1077,7 @@ Promise.all(MODELS.map(loadModel)).then(() => {
     const land = predictLanding();
     if (land) {
       reticle.position.set(land.x, land.y, land.z);
-      reticle.material.color.setHex(land.inBin ? 0x22d3ee : 0xf472b6);
+      reticle.material.color.setHex(land.inBin ? 0x3b82f6 : 0xff4d3d);
       reticle.visible = true;
     } else {
       reticle.visible = false;
@@ -1294,26 +1294,26 @@ Promise.all(MODELS.map(loadModel)).then(() => {
     if (!deploy.running && !deploy.over) {
       // start screen
       term.fillStyle = '#4ade80';
-      term.font = '700 72px "Space Grotesk", monospace';
+      term.font = '700 72px "Fraunces", monospace';
       term.fillText('DEPLOY RUSH', 60, 140);
       term.fillStyle = '#8b95a8';
       term.font = '30px "JetBrains Mono", monospace';
       term.fillText(TOUCH ? 'tap the matching command before prod dies'
                           : 'type the commands before prod goes down', 60, 250);
       term.fillText(`best run: ${deploy.best} deploys`, 60, 300);
-      term.fillStyle = '#22d3ee';
+      term.fillStyle = '#3b82f6';
       if (Math.sin(t * 4) > -0.2) term.fillText(TOUCH ? '▸ tap START below' : '▸ press ENTER to start', 60, 400);
     } else if (deploy.over) {
       term.fillStyle = '#ef4444';
-      term.font = '700 66px "Space Grotesk", monospace';
+      term.font = '700 66px "Fraunces", monospace';
       term.fillText('PROD IS DOWN', 60, 130);
-      term.fillStyle = '#e8eaf2';
+      term.fillStyle = '#ece6da';
       term.font = '34px "JetBrains Mono", monospace';
       term.fillText(`${deploy.score} deploys shipped`, 60, 240);
       term.fillStyle = '#8b95a8';
       term.font = '28px "JetBrains Mono", monospace';
       term.fillText(`best: ${deploy.best}`, 60, 295);
-      term.fillStyle = '#22d3ee';
+      term.fillStyle = '#3b82f6';
       if (Math.sin(t * 4) > -0.2) term.fillText(TOUCH ? '▸ tap RETRY below' : '▸ ENTER to retry · ESC to leave', 60, 400);
     } else if (TOUCH) {
       // touch running: show the target command to find + HUD
@@ -1333,7 +1333,7 @@ Promise.all(MODELS.map(loadModel)).then(() => {
       term.fillStyle = '#8b95a8';
       term.font = '28px "JetBrains Mono", monospace';
       term.fillText('deploy this command:', 40, 210);
-      term.fillStyle = '#22d3ee';
+      term.fillStyle = '#3b82f6';
       term.font = '700 52px "JetBrains Mono", monospace';
       term.fillText(deploy.target, 40, 270);
       term.fillStyle = '#5a6478';
@@ -1366,7 +1366,7 @@ Promise.all(MODELS.map(loadModel)).then(() => {
 
       // prompt + target
       term.font = '34px "JetBrains Mono", monospace';
-      term.fillStyle = '#22d3ee';
+      term.fillStyle = '#3b82f6';
       const promptStr = 'kush@prod:~$ ';
       term.fillText(promptStr, 40, 460);
       const px0 = 40 + term.measureText(promptStr).width;
@@ -1679,7 +1679,7 @@ const PANELS = {
   trivzy: `
     <h2>Trivzy</h2><span class="sub mono">the tech is all mine</span>
     <p>A hostel concierge & operations platform I built end to end. Guests get an AI chatbot, self check-in with document + signature upload, food ordering and vehicle rentals; operators get full admin dashboards.</p>
-    <p>Live in production: first hostel onboarded, <strong style="color:#e8eaf2">300+ guest check-ins</strong>. I own every line of the tech.</p>
+    <p>Live in production: first hostel onboarded, <strong style="color:#ece6da">300+ guest check-ins</strong>. I own every line of the tech.</p>
     <a class="cta" href="https://trivzy.in" target="_blank" rel="noopener">visit trivzy.in ↗</a>`,
   contact: `
     <h2>Contact</h2><span class="sub mono">the phone is always on</span>
@@ -1891,7 +1891,7 @@ function tick() {
     const on = id === hovered;
     for (const m of h.glow) {
       if (on) {
-        m.material.emissive.setHex(0x8b5cf6);
+        m.material.emissive.setHex(0x3b82f6);
         m.material.emissiveIntensity = 0.35 + Math.sin(t * 6) * 0.15;
       } else if (m.material.emissiveIntensity !== m.userData.baseEmissiveI) {
         m.material.emissive.setHex(m.userData.baseEmissive);
