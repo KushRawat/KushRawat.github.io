@@ -97,12 +97,14 @@ const PROJECTS = [
     code: 'https://github.com/KushRawat/task-management-system',
   },
   {
-    title: 'SpeakerDrain — speaker cleaner',
+    title: 'Speaker Water Eject',
     blurb: 'Browser-based phone-speaker cleaner: Web Audio API tone sweeps eject trapped water and dust, no app or backend. Built as a programmatic-SEO product with 18 generated landing pages, FAQ structured data, and an embeddable widget.',
     tags: ['Next.js 16', 'Web Audio API', 'SEO'],
     cats: ['personal'],
-    badge: 'indie product',
+    badge: 'live · indie product',
     media: 'assets/media/speakerdrain.jpg',
+    live: 'https://speakerwatereject.com',
+    embed: 'https://speakerwatereject.com/embed/water-eject',
   },
   {
     title: 'CardanStock — inventory & alerts',
@@ -152,11 +154,14 @@ grid.innerHTML = PROJECTS.map((p, idx) => {
     : `<div class="card__cover c${idx % 4}"><span>${initials(p.title)}</span></div>`;
   const play = p.video
     ? `<button class="card__play" data-video="${p.video}" aria-label="Play ${p.title} walkthrough"><span>▶</span></button>`
+    : p.embed
+    ? `<button class="card__play" data-embed="${p.embed}" aria-label="Try ${p.title} live"><span>▶</span></button>`
     : '';
   const links = [
     p.live ? `<a href="${p.live}" target="_blank" rel="noopener" data-cursor="link">live ↗</a>` : '',
     p.code ? `<a href="${p.code}" target="_blank" rel="noopener" data-cursor="link">code ↗</a>` : '',
     p.video ? `<button data-video="${p.video}" data-cursor="link">▶ walkthrough</button>` : '',
+    p.embed ? `<button data-embed="${p.embed}" data-cursor="link">▶ try it live</button>` : '',
   ].filter(Boolean).join('');
   return `
     <article class="card reveal" data-cats="${p.cats.join(' ')}" data-tilt>
@@ -191,18 +196,31 @@ chips.forEach((chip) => {
 /* ================= video lightbox ================= */
 const lightbox = document.getElementById('lightbox');
 const lightboxVideo = document.getElementById('lightboxVideo');
+const lightboxEmbed = document.getElementById('lightboxEmbed');
 document.addEventListener('click', (e) => {
-  const trigger = e.target.closest('[data-video]');
-  if (trigger) {
-    lightboxVideo.src = trigger.dataset.video;
+  const videoTrigger = e.target.closest('[data-video]');
+  const embedTrigger = e.target.closest('[data-embed]');
+  if (videoTrigger) {
+    lightbox.classList.remove('is-embed');
+    lightboxEmbed.hidden = true;
+    lightboxEmbed.removeAttribute('src');
+    lightboxVideo.hidden = false;
+    lightboxVideo.src = videoTrigger.dataset.video;
     lightbox.showModal();
     lightboxVideo.play().catch(() => {});
+  } else if (embedTrigger) {
+    lightbox.classList.add('is-embed');
+    lightboxVideo.hidden = true;
+    lightboxEmbed.hidden = false;
+    lightboxEmbed.src = embedTrigger.dataset.embed;
+    lightbox.showModal();
   }
 });
 function closeLightbox() {
   lightboxVideo.pause();
   lightboxVideo.removeAttribute('src');
   lightboxVideo.load();
+  lightboxEmbed.removeAttribute('src');
   lightbox.close();
 }
 document.getElementById('lightboxClose').addEventListener('click', closeLightbox);

@@ -249,8 +249,9 @@
 
   <!-- video lightbox -->
   <dialog class="lightbox" id="lightbox">
-    <button class="lightbox__close" id="lightboxClose" aria-label="Close video">✕</button>
+    <button class="lightbox__close" id="lightboxClose" aria-label="Close">✕</button>
     <video id="lightboxVideo" controls playsinline preload="metadata"></video>
+    <iframe id="lightboxEmbed" title="Live demo" loading="lazy" hidden></iframe>
   </dialog>
 
   <script type="module" src="js/scene.js"></script>

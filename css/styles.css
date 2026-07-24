@@ -282,6 +282,9 @@ html.lenis { scroll-behavior: auto; }
 }
 .lightbox::backdrop { background: rgba(4, 6, 10, 0.88); backdrop-filter: blur(8px); }
 .lightbox video { width: 100%; border-radius: 14px; display: block; box-shadow: 0 30px 90px rgba(0, 0, 0, 0.6); }
+.lightbox.is-embed { max-width: min(560px, 92vw); }
+.lightbox iframe { display: block; margin: 0 auto; width: 100%; height: min(470px, 88vh); border: 0; border-radius: 14px; background: #fff; box-shadow: 0 30px 90px rgba(0, 0, 0, 0.6); }
+.lightbox video[hidden], .lightbox iframe[hidden] { display: none; }
 .lightbox__close {
   position: absolute; top: -2.6rem; right: 0; background: none; border: 0; color: #fff;
   font-size: 1.4rem; cursor: pointer;
