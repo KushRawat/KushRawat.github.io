@@ -1659,7 +1659,7 @@ const PANELS = {
     <h2>Projects</h2><span class="sub mono">on the monitor: real shipped work</span>
     <ul>
       <li><h3>Trivzy</h3><p>Hostel concierge & ops platform; I built and run all of its tech. Live with 300+ check-ins.</p><a href="https://trivzy.in" target="_blank" rel="noopener">trivzy.in ↗</a></li>
-      <li><h3>Luna</h3><p>Desktop AI assistant running LLMs fully on-device (Electron + node-llama-cpp).</p></li>
+      <li><h3>Luna</h3><p>Desktop AI assistant running LLMs fully on-device (Electron + node-llama-cpp). Placed 2nd of 70+ at a hackathon.</p></li>
       <li><h3>CaseFlow</h3><p>50k-row CSV import → validate → fix → track pipeline.</p><a href="https://caseflow-frontend.vercel.app" target="_blank" rel="noopener">live ↗</a></li>
       <li><h3>InoCloud</h3><p>Compliance-grade e-Factura invoicing SaaS for Romania, built from scratch at InoventX.</p></li>
       <li><h3>Meest ops portal</h3><p>Parcel-ops portal with multilingual bulk-import pipeline and Deliveo→Meest sync.</p></li>

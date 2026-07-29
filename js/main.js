@@ -9,7 +9,7 @@ const TOUCH = window.matchMedia('(hover: none)').matches;
 const PROJECTS = [
   {
     title: 'Luna — local desktop AI assistant',
-    blurb: 'Desktop AI assistant that runs LLMs fully on-device: no cloud, no API keys. Electron + node-llama-cpp, React renderer. Built at a hackathon.',
+    blurb: 'Desktop AI assistant that runs LLMs fully on-device: no cloud, no API keys. Electron + node-llama-cpp, React renderer. Built at a hackathon, where it placed 2nd out of 70+ submissions.',
     tags: ['Electron', 'node-llama-cpp', 'React', 'TypeScript'],
     cats: ['ai', 'personal'],
     badge: 'AI · on-device',
