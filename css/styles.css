@@ -138,6 +138,9 @@ html.lenis { scroll-behavior: auto; }
   font-size: 0.9375rem; color: var(--ink-dim);
 }
 .now__track::-webkit-scrollbar { display: none; }
+/* centre when it fits; auto margins collapse to 0 when it overflows, so phones still scroll from the start */
+.now__track > :first-child { margin-left: auto; }
+.now__track > :last-child { margin-right: auto; }
 .now__track strong { color: var(--ink); }
 .now__dot { width: 4px; height: 4px; border-radius: 50%; background: var(--accent); flex: none; }
 
