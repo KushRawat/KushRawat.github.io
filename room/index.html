@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Kush's Playground — 3D Portfolio</title>
-  <meta name="description" content="Kush Rawat's 3D playground — explore the dev room, play paper toss, survive Deploy Rush, and browse real shipped projects." />
+  <title>Kush's Playground · 3D Portfolio</title>
+  <meta name="description" content="Kush Rawat's 3D playground: explore the dev room, play paper toss, survive Deploy Rush, and browse real shipped projects." />
   <link rel="icon" type="image/png" sizes="32x32" href="../assets/img/favicon-32.png" />
   <link rel="icon" type="image/png" sizes="192x192" href="../assets/img/favicon-192.png" />
   <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png" />
@@ -51,7 +51,11 @@
       <span>score <b id="gScore">0</b></span>
       <span>streak <b id="gStreak">×0</b></span>
       <span>best <b id="gBest">0</b></span>
-      <span class="rgame__wind" id="gWind">wind —</span>
+      <span class="rgame__wind" id="gWind">no wind</span>
+    </div>
+    <div class="rgame__modes mono" id="gModes" role="group" aria-label="Difficulty">
+      <button type="button" class="rgame__mode is-active" data-mode="staging" aria-pressed="true">staging <span>with aim guide</span></button>
+      <button type="button" class="rgame__mode" data-mode="prod" aria-pressed="false">prod <span>no guide</span></button>
     </div>
     <div class="rgame__hint mono" id="gHint">drag & release to toss the crumpled deploy logs 🗑</div>
   </div>

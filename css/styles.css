@@ -1,5 +1,5 @@
 /* ============================================================
-   Kush Rawat — portfolio · dark, WebGL-backed, type-forward
+   Kush Rawat: portfolio · dark, WebGL-backed, type-forward
    ============================================================ */
 :root {
   --bg: #080a10;
@@ -416,3 +416,4 @@ body.has-cursor .cursor-dot, body.has-cursor .cursor-ring { display: block; }
 /* time-aware playground line: the room's lights follow the visitor's clock */
 .hero__clock { color: var(--moon); font-size: 0.8125rem; }
 .contact__meta { margin-top: 1.5rem; color: var(--moon); font-size: 0.8125rem; }
+

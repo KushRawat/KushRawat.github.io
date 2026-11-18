@@ -5,10 +5,32 @@ const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const TOUCH = window.matchMedia('(hover: none)').matches;
 
 /* ================= project data ================= */
-// category: startup | client | ai | challenge | personal
+// category: startup | client | growth | ai | challenge | personal
 const PROJECTS = [
   {
-    title: 'Luna — local desktop AI assistant',
+    title: 'Transparent eCom: growth engineering',
+    blurb: 'Growth engineer for a US agency that runs compliant advertising for regulated brands. Moved their WordPress site to Cloudways behind Cloudflare, rebuilt the SEO and AI-search foundations, and automated their GoHighLevel CRM and lemlist outbound sync.',
+    tags: ['WordPress', 'Cloudways', 'Cloudflare', 'GoHighLevel', 'SEO / GEO'],
+    cats: ['client', 'growth'],
+    badge: 'contract · Sep 2026 – now',
+    live: 'https://livetransparent.com',
+  },
+  {
+    title: 'Growth Insights: reporting app',
+    blurb: 'Internal analytics app for Transparent eCom. Collectors pull GA4, Search Console, Cloudflare, PageSpeed, Bing and GoHighLevel into Postgres.',
+    tags: ['Next.js 16', 'PostgreSQL', 'Drizzle', 'Better Auth', 'Playwright'],
+    cats: ['client', 'growth', 'ai'],
+    badge: 'client · live, internal',
+  },
+  {
+    title: 'Fee-collection AI agent',
+    blurb: 'Built in 48 hours as a trial project for an edtech startup: a school fee desk run by an agent. Student CSV import, conversational fee setup, WhatsApp and email reminders with Razorpay payment links, webhook receipts, escalations and a defaulter report. A cheap router model classifies every request first, so a read-only question can never reach a tool with side effects.',
+    tags: ['Next.js', 'OpenAI Responses API', 'Prisma', 'Razorpay', 'WhatsApp'],
+    cats: ['ai', 'challenge'],
+    badge: 'AI agent · 48-hour build',
+  },
+  {
+    title: 'Luna: local desktop AI assistant',
     blurb: 'Desktop AI assistant that runs LLMs fully on-device: no cloud, no API keys. Electron + node-llama-cpp, React renderer. Built at a hackathon, where it placed 2nd out of 70+ submissions.',
     tags: ['Electron', 'node-llama-cpp', 'React', 'TypeScript'],
     cats: ['ai', 'personal'],
@@ -17,11 +39,11 @@ const PROJECTS = [
     video: 'assets/media/luna.mp4',
   },
   {
-    title: 'InoCloud — e-Factura platform',
+    title: 'InoCloud: e-Factura platform',
     blurb: 'Compliance-grade e-invoicing SaaS for Romania’s ANAF e-Factura system, built from scratch: invoice state machine with immutable legal snapshots, multi-tenant RBAC, BullMQ workers, and a Python analytics microservice for WooCommerce sync + sales forecasting.',
     tags: ['Express', 'MongoDB', 'Next.js', 'BullMQ', 'Python'],
     cats: ['client'],
-    badge: 'InoventX · in development',
+    badge: 'InoventX client',
     media: 'assets/media/inocloud.jpg',
   },
   {
@@ -32,32 +54,42 @@ const PROJECTS = [
     badge: 'InoventX client',
   },
   {
-    title: 'NBet — promotions & affiliate backend',
+    title: 'NBet: promotions & affiliate backend',
     blurb: 'Full backend for an iGaming promotions platform: custom affiliate click-tracking with multi-partner conversion postbacks, cron-based automated bet settlement against live football data, and a gamified coins wallet (lucky wheel, advent calendar, giveaways).',
     tags: ['Express', 'Knex', 'MySQL', 'GitHub Actions', 'PM2'],
     cats: ['client'],
     badge: 'InoventX client',
   },
   {
-    title: 'Stazo — backpacker hostel',
-    blurb: 'Full website for a traveler & backpacker hostel in Jibhi, Himachal Pradesh: booking flow, experiences, blog.',
-    tags: ['Next.js', 'Tailwind'],
+    title: 'HealthBridge Mediwise',
+    blurb: 'Took over a legacy PHP site for a medical-device company: migrated it from cPanel to AWS Lightsail with a Docker mirror of production, and now build new modules for the site as the team needs them.',
+    tags: ['AWS Lightsail', 'Docker', 'PHP', 'MySQL'],
+    cats: ['client'],
+    badge: 'freelance · live',
+    media: 'assets/media/hbm.jpg',
+    live: 'https://healthbridgemediwise.com/cases/',
+  },
+  {
+    title: 'Stazo: backpacker hostel',
+    blurb: 'Full website for a backpacker hostel in Jibhi, Himachal Pradesh: rooms, experiences, café, blog and careers, with a booking widget that hands guests to the hotel booking engine with their dates filled in.',
+    tags: ['Next.js 16', 'Tailwind', 'Motion', 'Vercel'],
     cats: ['client'],
     badge: 'freelance · live',
     media: 'assets/media/stazo.jpg',
     live: 'https://www.stazo.in',
   },
   {
-    title: 'HealthBridge Mediwise',
-    blurb: 'Migrated the client’s hosting & PHP codebase from cPanel to AWS Lightsail (Docker, DNS cutover, PHP 8 fixes); built schedule-a-meeting and catalog modules.',
-    tags: ['AWS Lightsail', 'Docker', 'PHP'],
-    cats: ['client'],
-    badge: 'freelance · live',
-    media: 'assets/media/hbm.jpg',
-    live: 'https://healthbridgemediwise.com/',
+    title: 'Speaker Water Eject',
+    blurb: 'Browser-based phone-speaker cleaner, built and grown as an indie product: Web Audio tone sweeps, a sound-test suite, a wet-phone first-aid wizard, an installable offline PWA and 20+ guides written for search and AI answers.',
+    tags: ['Next.js 16', 'Web Audio API', 'SEO / GEO', 'PWA'],
+    cats: ['personal', 'growth'],
+    badge: 'live · indie product',
+    media: 'assets/media/speakerwatereject.jpg',
+    live: 'https://speakerwatereject.com',
+    embed: 'https://speakerwatereject.com/embed/water-eject',
   },
   {
-    title: 'Lookstyle — footwear brand',
+    title: 'Lookstyle: footwear brand',
     blurb: 'E-commerce/brand website for a footwear label, including the product photoshoot asset pipeline.',
     tags: ['Next.js', 'E-commerce'],
     cats: ['client'],
@@ -66,7 +98,7 @@ const PROJECTS = [
     video: 'assets/media/lookstyle-1.mp4',
   },
   {
-    title: 'CaseFlow — bulk CSV ingestion',
+    title: 'CaseFlow: bulk CSV ingestion',
     blurb: 'Import → validate → fix → submit → track: ops teams upload 50k-row spreadsheets, clean data inline, and create cases reliably. Live on Vercel + Render.',
     tags: ['React', 'Express', 'OpenAPI'],
     cats: ['challenge'],
@@ -87,7 +119,7 @@ const PROJECTS = [
     code: 'https://github.com/KushRawat/scrape-and-ask',
   },
   {
-    title: 'TaskSphere — task management',
+    title: 'TaskSphere: task management',
     blurb: 'Secure task platform: JWT with refresh rotation & revocation, Prisma, Zod validation; Next.js 14 App Router frontend with React Query + Zustand.',
     tags: ['Next.js 14', 'Prisma', 'JWT', 'Zod'],
     cats: ['challenge'],
@@ -97,25 +129,15 @@ const PROJECTS = [
     code: 'https://github.com/KushRawat/task-management-system',
   },
   {
-    title: 'Speaker Water Eject',
-    blurb: 'Browser-based phone-speaker cleaner: Web Audio API tone sweeps eject trapped water and dust, no app or backend. Built as a programmatic-SEO product with 18 generated landing pages, FAQ structured data, and an embeddable widget.',
-    tags: ['Next.js 16', 'Web Audio API', 'SEO'],
-    cats: ['personal'],
-    badge: 'live · indie product',
-    media: 'assets/media/speakerdrain.jpg',
-    live: 'https://speakerwatereject.com',
-    embed: 'https://speakerwatereject.com/embed/water-eject',
-  },
-  {
-    title: 'CardanStock — inventory & alerts',
-    blurb: 'Back-office inventory system for the driveshaft repair shop: stock-movement ledger with transactional row locking, transition-only low-stock email alerts, audit logs, and a bilingual RO/EN UI. Dependency-free PHP built to run on cheap shared hosting.',
+    title: 'CardanStock: inventory & alerts',
+    blurb: 'Back-office inventory system for the driveshaft repair shop: stock-movement ledger with transactional row locking, transition-only low-stock email alerts, audit logs, and a bilingual RO/EN UI.',
     tags: ['PHP', 'MySQL', 'Security', 'cron'],
     cats: ['client'],
     badge: 'InoventX client',
     media: 'assets/media/cardanstock.jpg',
   },
   {
-    title: 'ProjectMate — task management',
+    title: 'ProjectMate: task management',
     blurb: 'Task tracker with filterable views and an analytics dashboard (team workload, weekly completions), end-to-end typed with tRPC + Zod, Prisma/PostgreSQL, Supabase auth, deployed serverless on AWS via SST.',
     tags: ['tRPC', 'SST', 'Supabase', 'Prisma'],
     cats: ['personal'],
@@ -123,8 +145,8 @@ const PROJECTS = [
     code: 'https://github.com/KushRawat/project-management-app',
   },
   {
-    title: 'InoventX — company site',
-    blurb: 'Marketing site for InoventX, the Romanian product studio I contract with.',
+    title: 'InoventX: company site',
+    blurb: 'Marketing site for InoventX.',
     tags: ['Next.js'],
     cats: ['client'],
     badge: 'InoventX · live',
@@ -132,7 +154,7 @@ const PROJECTS = [
     live: 'https://inoventx-ro.vercel.app/',
   },
   {
-    title: 'Cardan Service — client website',
+    title: 'Cardan Service: client website',
     blurb: 'Marketing/service website for a Bucharest driveshaft-repair business: services catalog, process walkthrough, and rapid-booking flow.',
     tags: ['Next.js', 'Tailwind'],
     cats: ['client'],
@@ -145,7 +167,7 @@ const PROJECTS = [
 const grid = document.getElementById('projectGrid');
 
 function initials(title) {
-  return title.split(/[\s—-]+/).filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join('');
+  return title.split(/[\s:-]+/).filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join('');
 }
 
 grid.innerHTML = PROJECTS.map((p, idx) => {
@@ -352,7 +374,7 @@ function finishLoad() {
 
 const seenIntro = sessionStorage.getItem('kr-intro');
 if (REDUCED || seenIntro) {
-  // returning within the session (e.g. back from the room) — no counter replay
+  // returning within the session (e.g. back from the room): no counter replay
   loader.remove();
   document.body.classList.add('is-loaded');
 } else {
@@ -372,15 +394,16 @@ if (REDUCED || seenIntro) {
 
 /* ================= role ticker ================= */
 const ROLES = [
-  'Building Trivzy',
   'Full-stack engineer',
+  'Growth engineer',
+  'Building Trivzy',
   'AI-accelerated builder',
   '0 → 1 product shipper',
   'fintech: payments · KYC · recon',
 ];
 const ticker = document.getElementById('roleTicker');
 let roleIdx = 0;
-const GLYPHS = '!<>-_\\/[]{}—=+*^?#________';
+const GLYPHS = '!<>-_\\/[]{}=+*^?#________';
 function scrambleTo(el, text) {
   const from = el.textContent;
   const len = Math.max(from.length, text.length);
@@ -418,7 +441,7 @@ if (heroClock) {
   const tickClock = () => {
     const d = new Date();
     const t = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
-    heroClock.textContent = ` — ${t}, ${phase(d.getHours())}`;
+    heroClock.textContent = ` · ${t}, ${phase(d.getHours())}`;
   };
   tickClock();
   setInterval(tickClock, 30000);
@@ -461,7 +484,7 @@ if ('requestIdleCallback' in window) {
 }
 
 /* ================= portal resilience ================= */
-// back/forward-cache restores can bring the page back mid-warp — reset fully
+// back/forward-cache restores can bring the page back mid-warp: reset fully
 window.addEventListener('pageshow', (e) => {
   document.body.classList.remove('is-warping');
   window.__warpReset?.();

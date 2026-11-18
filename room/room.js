@@ -1,4 +1,4 @@
-// Kush's Room — interactive 3D dev room (layout 2).
+// Kush's Room: interactive 3D dev room (layout 2).
 // CC0 furniture models by Kenney (kenney.nl). Everything else hand-placed.
 // Hotspots: monitor → projects, TV → walkthrough videos, shelf → Trivzy,
 // phone → contact.
@@ -100,13 +100,13 @@ scene.add(ambient);
 const hemi = new THREE.HemisphereLight(0x334, 0x110f18, 0.5);
 scene.add(hemi);
 
-// mutable light bases — the day/night preset system lerps these; the "life"
+// mutable light bases: the day/night preset system lerps these; the "life"
 // flicker animatables multiply them instead of writing absolute values
 const rig = { neonOpacity: 1, neonLight: 3.6, tvGlow: 4.4, screenGlow: 6, dustOpacity: 0.55 };
 
 const warm = new THREE.PointLight(0xffa550, 9, 9, 2);
 warm.position.set(2.65, 1.55, -0.85); // floor lamp head
-// point-light shadows are the priciest — drop them entirely on phones
+// point-light shadows are the priciest: drop them entirely on phones
 warm.castShadow = !LOWPWR;
 warm.shadow.mapSize.set(1024, 1024);
 warm.shadow.bias = -0.002;
@@ -157,7 +157,7 @@ function loadModel(name) {
 }
 
 // place a clone of a library model: scale so bbox height == h (or width == w),
-// then recenter so bbox center sits on pos.x/z and bbox bottom on pos.y —
+// then recenter so bbox center sits on pos.x/z and bbox bottom on pos.y -
 // Kenney GLBs have corner pivots, so raw positioning floats/offsets them.
 function put(name, { h, w, pos, rot = 0 }) {
   const obj = lib[name].clone(true);
@@ -228,7 +228,7 @@ function registerHotspot(id, group, view, label, markerPos) {
   });
   const marker = makePulseSprite(markerPos);
   marker.userData.hotspot = id; // the floating pulse is tappable too (esp. on touch)
-  // invisible hit-sphere at the marker — a generous, occlusion-proof tap target
+  // invisible hit-sphere at the marker: a generous, occlusion-proof tap target
   // so small/edge objects (phone, trashcan) are reliably reachable, esp. on touch
   const proxy = new THREE.Mesh(
     new THREE.SphereGeometry(TOUCH ? 0.32 : 0.2, 8, 8),
@@ -244,12 +244,12 @@ function registerHotspot(id, group, view, label, markerPos) {
 // registry of per-frame idle animations (steam, flicker, swivel, dust…)
 const animatables = [];
 
-// paper toss game — implementations assigned once the scene is built
+// paper toss game: implementations assigned once the scene is built
 let gameActive = false;
 let startGame = () => {};
 let endGame = () => {};
 
-// deploy rush typing game — implementations assigned once the scene is built
+// deploy rush typing game: implementations assigned once the scene is built
 let deployActive = false;
 let startDeploy = () => {};
 let endDeploy = () => {};
@@ -282,7 +282,7 @@ function posterTexture() {
   return t;
 }
 
-// soft dark blob under furniture — cheap contact shadows
+// soft dark blob under furniture: cheap contact shadows
 const blobTex = (() => {
   const cv = document.createElement('canvas');
   cv.width = cv.height = 128;
@@ -491,7 +491,7 @@ Promise.all(MODELS.map(loadModel)).then(() => {
     scene.add(note);
   }
 
-  // monitor screen plane — cycles real project screenshots
+  // monitor screen plane: cycles real project screenshots
   const texLoader = new THREE.TextureLoader();
   SHOTS.forEach((n) => {
     texLoader.load(`../assets/media/${n}.jpg`, (t) => {
@@ -531,7 +531,7 @@ Promise.all(MODELS.map(loadModel)).then(() => {
   monitor.userData.hotspot = 'projects';
   registerHotspot('projects', monitor, {
     pos: [1.05, 1.3, -0.85], tgt: [0.45, 1.0, -2.55], // angled so the hostel stays out of frame
-  }, 'Projects — click', [0.5, 1.45, -2.55]);
+  }, 'Projects · click', [0.5, 1.45, -2.55]);
   screen.userData.hotspot = 'projects';
 
   /* ---- TV zone (left wall) ---- */
@@ -540,7 +540,7 @@ Promise.all(MODELS.map(loadModel)).then(() => {
   put('speaker', { h: 0.55, pos: [-2.62, 0, 1.25], rot: Math.PI / 2 });
   put('radio', { h: 0.16, pos: [-2.62, 0.5, -0.5], rot: Math.PI / 2 });
 
-  // TV screen plane — plays walkthrough videos
+  // TV screen plane: plays walkthrough videos
   tvVideo = document.createElement('video');
   tvVideo.muted = true; tvVideo.loop = true; tvVideo.playsInline = true;
   tvVideo.preload = 'auto';
@@ -562,7 +562,7 @@ Promise.all(MODELS.map(loadModel)).then(() => {
   tvScreen.userData.hotspot = 'tv';
   registerHotspot('tv', tv, {
     pos: [-0.35, 1.15, 0.3], tgt: [-2.5, 0.95, 0.3],
-  }, 'Walkthrough videos — click', [-2.45, 1.5, 0.3]);
+  }, 'Walkthrough videos · click', [-2.45, 1.5, 0.3]);
   cab.userData.hotspot = 'tv';
   cab.traverse((c) => { c.userData.hotspot = 'tv'; });
 
@@ -571,7 +571,7 @@ Promise.all(MODELS.map(loadModel)).then(() => {
   put('books', { h: 0.28, pos: [-2.25, 1.13, -2.72] });
   put('plantSmall2', { h: 0.3, pos: [-1.75, 1.13, -2.72] });
 
-  // mini Trivzy "hostel" on a shelf — tiny house from primitives
+  // mini Trivzy "hostel" on a shelf: tiny house from primitives
   const hostel = new THREE.Group();
   const hBody = new THREE.Mesh(
     new THREE.BoxGeometry(0.34, 0.22, 0.22),
@@ -603,7 +603,7 @@ Promise.all(MODELS.map(loadModel)).then(() => {
   scene.add(hostel);
   registerHotspot('trivzy', hostel, {
     pos: [-0.9, 2.0, -1.2], tgt: [-2.0, 2.15, -2.75],
-  }, 'Trivzy — I build all the tech', [-2.0, 2.75, -2.65]);
+  }, 'Trivzy · I build all the tech', [-2.0, 2.75, -2.65]);
   shelf.userData.hotspot = 'trivzy';
   shelf.traverse((c) => { c.userData.hotspot = 'trivzy'; });
 
@@ -634,7 +634,7 @@ Promise.all(MODELS.map(loadModel)).then(() => {
   put('pottedPlant', { h: 0.95, pos: [2.6, 0, -2.55] });
   put('lampRoundFloor', { h: 1.6, pos: [2.7, 0, -0.9] });
 
-  // phone on the coffee table — primitives
+  // phone on the coffee table: primitives
   const phone = new THREE.Group();
   const pBody = new THREE.Mesh(
     new THREE.BoxGeometry(0.09, 0.012, 0.18),
@@ -684,7 +684,7 @@ Promise.all(MODELS.map(loadModel)).then(() => {
   scene.add(moonlight);
 
   /* ---- framed stats flanking the Trivzy hostel ---- */
-  wallFrame(statTexture('300+', 'check-ins · trivzy'), 0.55, 0.4, [-2.6, 2.35, -2.98]);
+  wallFrame(statTexture('500+', 'check-ins · trivzy'), 0.55, 0.4, [-2.6, 2.35, -2.98]);
   wallFrame(statTexture('10+', 'apps · 6 months'), 0.5, 0.36, [-1.32, 2.28, -2.98]);
 
   /* ---- extra props (density pass) ---- */
@@ -885,10 +885,10 @@ Promise.all(MODELS.map(loadModel)).then(() => {
     switchNub.position.y += (NUB_Y[lightMode] - switchNub.position.y) * Math.min(1, dt * 10);
   });
 
-  // clickable hotspot (no camera move — handled specially in the click handler)
+  // clickable hotspot (no camera move: handled specially in the click handler)
   registerHotspot('lights', switchPlate, {
     pos: [5.3, 4.1, 5.6], tgt: [-0.2, 0.7, -0.4], // unused; click never navigates
-  }, 'Light switch — change the time of day', [2.62, 1.55, -2.94]);
+  }, 'Light switch · change the time of day', [2.62, 1.55, -2.94]);
   switchNub.userData.hotspot = 'lights';
 
   // initial mode: URL param wins, else the visitor's local time
@@ -900,7 +900,7 @@ Promise.all(MODELS.map(loadModel)).then(() => {
   /* ---- paper toss game ---- */
   registerHotspot('toss', trash, {
     pos: [1.35, 1.45, 0.95], tgt: [1.62, 0.45, -2.4],
-  }, 'Paper Toss — play!', [1.62, 0.62, -2.4]);
+  }, 'Paper Toss · play!', [1.62, 0.62, -2.4]);
 
   const trashBox = new THREE.Box3().setFromObject(trash);
   const RIM = {
@@ -943,7 +943,7 @@ Promise.all(MODELS.map(loadModel)).then(() => {
   aim.visible = false;
   scene.add(aim);
 
-  // target ring on the bin rim — shows the goal (esp. on touch, no cursor)
+  // target ring on the bin rim: shows the goal (esp. on touch, no cursor)
   const targetRing = new THREE.Mesh(
     new THREE.RingGeometry(RIM.r * 0.75, RIM.r * 1.05, 28),
     new THREE.MeshBasicMaterial({ color: 0x3b82f6, transparent: true, opacity: 0.55, side: THREE.DoubleSide, depthWrite: false })
@@ -953,7 +953,7 @@ Promise.all(MODELS.map(loadModel)).then(() => {
   targetRing.visible = false;
   scene.add(targetRing);
 
-  // landing reticle — the aiming "crosshair": where the ball is predicted to land
+  // landing reticle: the aiming "crosshair": where the ball is predicted to land
   const reticle = new THREE.Mesh(
     new THREE.RingGeometry(0.05, 0.075, 22),
     new THREE.MeshBasicMaterial({ color: 0xff4d3d, transparent: true, opacity: 0.95, side: THREE.DoubleSide, depthWrite: false })
@@ -962,9 +962,23 @@ Promise.all(MODELS.map(loadModel)).then(() => {
   reticle.visible = false;
   scene.add(reticle);
 
+  // two modes: staging shows the aim guide (dots + landing reticle), prod hides it
+  const MODES = {
+    staging: { hint: 'staging: aim guide on · drag & release to toss the crumpled deploy logs 🗑' },
+    prod: { hint: 'prod: no aim guide · drag & release and trust your gut 🗑' },
+  };
+  function loadMode() {
+    try { const m = localStorage.getItem('papertoss-mode'); return MODES[m] ? m : 'staging'; } catch { return 'staging'; }
+  }
+  const bestKey = (m) => (m === 'prod' ? 'papertoss-best-prod' : 'papertoss-best');
+  function loadBest(m) {
+    try { return Number(localStorage.getItem(bestKey(m)) || 0); } catch { return 0; }
+  }
+
   const game = {
     score: 0, streak: 0,
-    best: Number(localStorage.getItem('papertoss-best') || 0),
+    mode: loadMode(),
+    best: 0,
     wind: 0,
     state: 'idle', // idle | aiming | flying | done(score/miss settling)
     vel: new THREE.Vector3(),
@@ -973,6 +987,7 @@ Promise.all(MODELS.map(loadModel)).then(() => {
     scored: false,
     drag: { x0: 0, y0: 0, x: 0, y: 0 },
   };
+  game.best = loadBest(game.mode);
   window.__game = game; // handy for debugging/tests
 
   const ui = {
@@ -982,13 +997,39 @@ Promise.all(MODELS.map(loadModel)).then(() => {
     best: document.getElementById('gBest'),
     wind: document.getElementById('gWind'),
     hint: document.getElementById('gHint'),
+    modes: document.querySelectorAll('#gModes [data-mode]'),
   };
+  function syncModeUI() {
+    ui.modes.forEach((b) => {
+      const on = b.dataset.mode === game.mode;
+      b.classList.toggle('is-active', on);
+      b.setAttribute('aria-pressed', String(on));
+    });
+    ui.hint.textContent = MODES[game.mode].hint;
+  }
+  function setMode(m) {
+    if (!MODES[m] || m === game.mode) return;
+    game.mode = m;
+    try { localStorage.setItem('papertoss-mode', m); } catch {}
+    game.best = loadBest(m);
+    game.score = 0;
+    game.streak = 0;
+    if (game.state === 'aiming') game.state = 'idle';
+    aim.visible = false;
+    reticle.visible = false;
+    syncModeUI();
+    ui.hint.classList.remove('is-hidden');
+    syncHud();
+    blip(m === 'prod' ? 330 : 520, m === 'prod' ? 220 : 780);
+  }
+  ui.modes.forEach((b) => b.addEventListener('click', () => setMode(b.dataset.mode)));
+  syncModeUI();
   function syncHud() {
     ui.score.textContent = game.score;
     ui.streak.textContent = '×' + game.streak;
     ui.best.textContent = game.best;
     const w = game.wind;
-    ui.wind.textContent = Math.abs(w) < 0.05 ? 'wind —'
+    ui.wind.textContent = Math.abs(w) < 0.05 ? 'no wind'
       : `wind ${w > 0 ? '→' : '←'}${Math.abs(w) > 0.35 ? (w > 0 ? '→' : '←') : ''}`;
   }
   function popText(text, cx, cy) {
@@ -1022,6 +1063,7 @@ Promise.all(MODELS.map(loadModel)).then(() => {
     targetRing.visible = true;
     resetBall();
   };
+  window.__toss = () => startGame(); // handy for debugging/tests
   endGame = () => {
     if (!gameActive) return;
     gameActive = false;
@@ -1061,6 +1103,7 @@ Promise.all(MODELS.map(loadModel)).then(() => {
     );
   }
   function updateAimPreview() {
+    if (game.mode === 'prod') { aim.visible = false; reticle.visible = false; return; }
     const v = launchVelocity();
     const p = SPAWN.clone();
     const vv = v.clone();
@@ -1073,7 +1116,7 @@ Promise.all(MODELS.map(loadModel)).then(() => {
     }
     aimGeo.attributes.position.needsUpdate = true;
     aim.visible = true;
-    // landing reticle — the aiming crosshair (cyan = in the bin, pink = miss)
+    // landing reticle: the aiming crosshair (cyan = in the bin, pink = miss)
     const land = predictLanding();
     if (land) {
       reticle.position.set(land.x, land.y, land.z);
@@ -1102,7 +1145,7 @@ Promise.all(MODELS.map(loadModel)).then(() => {
     aim.visible = false;
     reticle.visible = false;
     const up = game.drag.y0 - game.drag.y;
-    if (up < 24) { game.state = 'idle'; return; } // too weak — cancel
+    if (up < 24) { game.state = 'idle'; return; } // too weak: cancel
     game.vel.copy(launchVelocity());
     game.state = 'flying';
     game.prevY = ball.position.y;
@@ -1116,7 +1159,7 @@ Promise.all(MODELS.map(loadModel)).then(() => {
       game.score += game.streak;
       if (game.score > game.best) {
         game.best = game.score;
-        localStorage.setItem('papertoss-best', String(game.best));
+        try { localStorage.setItem(bestKey(game.mode), String(game.best)); } catch {}
       }
       blip(660, 990);
       popText(`+${game.streak}`, window.innerWidth / 2, window.innerHeight * 0.42);
@@ -1156,7 +1199,7 @@ Promise.all(MODELS.map(loadModel)).then(() => {
     if (game.prevY > RIM.y && ball.position.y <= RIM.y && !game.scored) {
       game.lastCross = { dist: +distR.toFixed(3), x: +ball.position.x.toFixed(2), z: +ball.position.z.toFixed(2), t: +game.flightT.toFixed(2) };
       if (distR < RIM.r - BALL_R * 0.15) {
-        game.scored = true; // swish — falls inside
+        game.scored = true; // swish: falls inside
       } else if (distR < RIM.r + BALL_R * 1.4) {
         // rim hit: bounce off, away from center
         const nx = dxr / (distR || 1), nz = dzr / (distR || 1);
@@ -1186,10 +1229,10 @@ Promise.all(MODELS.map(loadModel)).then(() => {
     if (game.flightT > 3) resolveThrow(false);
   });
 
-  /* ---- Deploy Rush — typing game rendered onto the second monitor ---- */
+  /* ---- Deploy Rush: typing game rendered onto the second monitor ---- */
   registerHotspot('deploy', monitor2, {
     pos: [0.94, 1.2, -1.45], tgt: [0.94, 1.0, -2.62],
-  }, 'Deploy Rush — play!', [0.98, 1.42, -2.62]);
+  }, 'Deploy Rush · play!', [0.98, 1.42, -2.62]);
   screen2.userData.hotspot = 'deploy';
 
   const termCv = document.createElement('canvas');
@@ -1460,7 +1503,7 @@ Promise.all(MODELS.map(loadModel)).then(() => {
   finishLoading();
 }).catch((err) => {
   console.error(err);
-  loaderHint.textContent = 'something failed to load — try refreshing';
+  loaderHint.textContent = 'something failed to load, try refreshing';
 });
 
 /* ============ camera views & motion ============ */
@@ -1545,7 +1588,7 @@ function goTo(viewName, view) {
   zoomTarget = 1; // each view starts at its designed framing
   goalTgt.set(...view.tgt);
   goalPos.set(...view.pos);
-  // portrait screens see a narrower slice — pull the camera back
+  // portrait screens see a narrower slice: pull the camera back
   const portrait = camera.aspect < 0.8;
   const f = portrait ? 1.85 : camera.aspect < 1.1 ? 1.3 : 1;
   goalPos.sub(goalTgt).multiplyScalar(f).add(goalTgt);
@@ -1553,7 +1596,7 @@ function goTo(viewName, view) {
   if (portrait && viewName === 'overview') {
     goalTgt.x += 0.7; goalPos.x += 0.7;
   }
-  // on portrait, a bottom-sheet panel covers the lower part of the screen —
+  // on portrait, a bottom-sheet panel covers the lower part of the screen -
   // aim below the object so it rises into the visible top third
   if (portrait && PANEL_VIEWS.includes(viewName)) {
     goalTgt.y -= 1.15;
@@ -1587,7 +1630,7 @@ function pickHotspot(clientX, clientY) {
   pointer.x = (clientX / window.innerWidth) * 2 - 1;
   pointer.y = -(clientY / window.innerHeight) * 2 + 1;
   raycaster.setFromCamera(pointer, camera);
-  // 1) marker hit-spheres first — generous, occlusion-proof targets
+  // 1) marker hit-spheres first: generous, occlusion-proof targets
   const mh = raycaster.intersectObjects(markerProxies, false);
   if (mh.length) return mh[0].object.userData.hotspot;
   // 2) fall back to the actual object geometry (tapping the object itself)
@@ -1658,7 +1701,8 @@ const PANELS = {
   projects: `
     <h2>Projects</h2><span class="sub mono">on the monitor: real shipped work</span>
     <ul>
-      <li><h3>Trivzy</h3><p>Hostel concierge & ops platform; I built and run all of its tech. Live with 300+ check-ins.</p><a href="https://trivzy.in" target="_blank" rel="noopener">trivzy.in ↗</a></li>
+      <li><h3>Trivzy</h3><p>Hostel concierge & ops platform; I built and run all of its tech. Live with 500+ check-ins.</p><a href="https://trivzy.in" target="_blank" rel="noopener">trivzy.in ↗</a></li>
+      <li><h3>Growth Insights</h3><p>Reporting app for a US ad agency: GA4, Search Console, Cloudflare and CRM data in one place, with every number traceable to its rows.</p></li>
       <li><h3>Luna</h3><p>Desktop AI assistant running LLMs fully on-device (Electron + node-llama-cpp). Placed 2nd of 70+ at a hackathon.</p></li>
       <li><h3>CaseFlow</h3><p>50k-row CSV import → validate → fix → track pipeline.</p><a href="https://caseflow-frontend.vercel.app" target="_blank" rel="noopener">live ↗</a></li>
       <li><h3>InoCloud</h3><p>Compliance-grade e-Factura invoicing SaaS for Romania, built from scratch at InoventX.</p></li>
@@ -1678,8 +1722,8 @@ const PANELS = {
     <p style="margin-top:1rem">Want sound and full screen? <a href="../#projects">Watch them on the classic site →</a></p>`,
   trivzy: `
     <h2>Trivzy</h2><span class="sub mono">the tech is all mine</span>
-    <p>A hostel concierge & operations platform I built end to end. Guests get an AI chatbot, self check-in with document + signature upload, food ordering and vehicle rentals; operators get full admin dashboards.</p>
-    <p>Live in production: first hostel onboarded, <strong style="color:#ece6da">300+ guest check-ins</strong>. I own every line of the tech.</p>
+    <p>A hostel concierge & operations platform; I build and run all of its tech. Guests get an AI chatbot, self check-in with document + signature upload, food ordering and vehicle rentals; operators get full admin dashboards and a mobile ops app.</p>
+    <p>Live in production: first hostel onboarded, <strong style="color:#ece6da">500+ guest check-ins</strong>. I own every line of the tech.</p>
     <a class="cta" href="https://trivzy.in" target="_blank" rel="noopener">visit trivzy.in ↗</a>`,
   contact: `
     <h2>Contact</h2><span class="sub mono">the phone is always on</span>
@@ -1714,7 +1758,7 @@ window.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') { endGame(); endDeploy(); closePanel(); goTo('overview', VIEWS.overview); }
 });
 
-// bfcache restore can bring the room back mid-exit — reset the doorway
+// bfcache restore can bring the room back mid-exit: reset the doorway
 window.addEventListener('pageshow', (e) => {
   if (e.persisted) {
     document.body.classList.remove('is-leaving');
@@ -1722,7 +1766,7 @@ window.addEventListener('pageshow', (e) => {
   }
 });
 
-/* ============ exit portal — dolly forward + fade, then navigate ============ */
+/* ============ exit portal: dolly forward + fade, then navigate ============ */
 document.querySelectorAll('.rnav__exit, .rnav__logo').forEach((a) => {
   a.addEventListener('click', (e) => {
     e.preventDefault();
@@ -1736,11 +1780,13 @@ document.querySelectorAll('.rnav__exit, .rnav__logo').forEach((a) => {
   });
 });
 
-/* ============ sound (synthesized — no audio files) ============ */
+/* ============ sound (synthesized: no audio files) ============ */
 const soundBtn = document.getElementById('rsound');
 let audioCtx = null;
 let ambGain = null;
-let soundOn = true; // on by default — context starts on first user gesture
+let soundOn = true; // on by default: context starts on first user gesture
+const SFX_VOL = 0.14; // peak gain of every blip (was 0.045)
+const AMB_VOL = 0.02; // room-tone level (original)
 
 function blip(f1, f2) {
   if (!soundOn || !audioCtx) return;
@@ -1751,7 +1797,7 @@ function blip(f1, f2) {
   o.frequency.setValueAtTime(f1, t0);
   o.frequency.exponentialRampToValueAtTime(f2, t0 + 0.12);
   g.gain.setValueAtTime(0.0001, t0);
-  g.gain.exponentialRampToValueAtTime(0.045, t0 + 0.02);
+  g.gain.exponentialRampToValueAtTime(SFX_VOL, t0 + 0.02);
   g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.2);
   o.connect(g).connect(audioCtx.destination);
   o.start(t0); o.stop(t0 + 0.22);
@@ -1772,7 +1818,7 @@ function startAmbient() { // soft brown-noise room tone
   const lp = audioCtx.createBiquadFilter();
   lp.type = 'lowpass'; lp.frequency.value = 420;
   ambGain = audioCtx.createGain();
-  ambGain.gain.value = 0.02;
+  ambGain.gain.value = AMB_VOL;
   src.connect(lp).connect(ambGain).connect(audioCtx.destination);
   src.start();
 }
@@ -1781,7 +1827,7 @@ function initAudio() {
   if (audioCtx) return;
   audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   startAmbient();
-  ambGain.gain.value = soundOn ? 0.02 : 0;
+  ambGain.gain.value = soundOn ? AMB_VOL : 0;
 }
 
 function syncSoundBtn() {
@@ -1798,7 +1844,7 @@ soundBtn.addEventListener('click', () => {
   soundOn = !soundOn;
   initAudio();
   syncSoundBtn();
-  if (ambGain) ambGain.gain.value = soundOn ? 0.02 : 0;
+  if (ambGain) ambGain.gain.value = soundOn ? AMB_VOL : 0;
   if (soundOn) blip(520, 780);
 });
 
@@ -1885,7 +1931,7 @@ function tick() {
     s.material.opacity = currentView === 'overview' ? 0.9 : 0.25;
   });
 
-  // hover glow — violet emissive pulse on the hovered hotspot
+  // hover glow: violet emissive pulse on the hovered hotspot
   for (const [id, h] of Object.entries(hotspots)) {
     if (!h.glow) continue;
     const on = id === hovered;

@@ -1,4 +1,4 @@
-// WebGL background — 16k particles that morph between four formations as you
+// WebGL background: 16k particles that morph between four formations as you
 // scroll: wave terrain (hero) → galaxy spiral (projects) → sphere (experience)
 // → ring vortex (contact). Mouse parallax, palette shifts, soft additive glow.
 // Falls back to a static CSS gradient on reduced-motion / no-WebGL.
@@ -18,7 +18,7 @@ else {
 
 function init() {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: true, powerPreference: 'high-performance' });
-  // Points don't need retina density — fill rate is the bottleneck here.
+  // Points don't need retina density: fill rate is the bottleneck here.
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.25));
   renderer.setSize(window.innerWidth, window.innerHeight);
 
@@ -47,12 +47,12 @@ function init() {
       const rnd = Math.random();
       seeds[i] = rnd;
 
-      // 1 — flat grid (waves added in shader)
+      // 1: flat grid (waves added in shader)
       terrain[idx] = (x / (COLS - 1) - 0.5) * 34;
       terrain[idx + 1] = -1.4;
       terrain[idx + 2] = (z / (ROWS - 1) - 0.5) * 22;
 
-      // 2 — galaxy spiral (3 arms)
+      // 2: galaxy spiral (3 arms)
       const frac = i / count;
       const arm = i % 3;
       const angle = frac * Math.PI * 7 + (arm * Math.PI * 2) / 3;
@@ -61,7 +61,7 @@ function init() {
       galaxy[idx + 1] = (rnd - 0.5) * (1.6 - frac) - 0.4;
       galaxy[idx + 2] = Math.sin(angle) * radius - 2.0;
 
-      // 3 — fibonacci sphere
+      // 3: fibonacci sphere
       const t = i / (count - 1);
       const inc = Math.acos(1 - 2 * t);
       const az = GOLDEN * i;
@@ -70,7 +70,7 @@ function init() {
       sphere[idx + 1] = r3 * Math.cos(inc) * 0.92;
       sphere[idx + 2] = r3 * Math.sin(inc) * Math.sin(az) - 1.0;
 
-      // 4 — ring vortex
+      // 4: ring vortex
       const a4 = frac * Math.PI * 2 * 3 + rnd * 0.35;
       const r4 = 4.6 + (rnd - 0.5) * 1.3;
       ring[idx] = Math.cos(a4) * r4;
@@ -205,7 +205,7 @@ function init() {
     [new THREE.Color(0x2563eb), new THREE.Color(0xfb923c)], // hero: blue valley / orange peak (the duo)
     [new THREE.Color(0xc2410c), new THREE.Color(0xfbbf24)], // projects: warm orange / amber
     [new THREE.Color(0x1e40af), new THREE.Color(0x60a5fa)], // experience: deep blue / sky
-    [new THREE.Color(0x2f5fb8), new THREE.Color(0xfb923c)], // contact: blue field / warm embers — late night, lamp on
+    [new THREE.Color(0x2f5fb8), new THREE.Color(0xfb923c)], // contact: blue field / warm embers: late night, lamp on
   ];
   const colA = new THREE.Color(), colB = new THREE.Color();
   function paletteAt(p) {
@@ -225,7 +225,7 @@ function init() {
     mouse.ty = (e.clientY / window.innerHeight - 0.5) * 2;
   }, { passive: true });
 
-  // scroll progress — window.__scrollProgress is set by main.js (Lenis) when
+  // scroll progress: window.__scrollProgress is set by main.js (Lenis) when
   // available; fall back to native scroll position otherwise.
   function scrollProgress() {
     if (typeof window.__scrollProgress === 'number') return window.__scrollProgress;
@@ -265,7 +265,7 @@ function init() {
     renderer.setSize(window.innerWidth, window.innerHeight);
   }
 
-  // hyperspace warp — main.js calls window.__warp(done) when entering the room
+  // hyperspace warp: main.js calls window.__warp(done) when entering the room
   let warpT = null;
   let warpDone = null;
   window.__warp = (done) => {
